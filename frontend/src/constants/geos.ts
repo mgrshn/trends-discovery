@@ -77,7 +77,5 @@ export const ENGINE_OPTIONS = [
 // Гео без Worldwide — для режима Real-time (Trending Now не поддерживает worldwide)
 export const GEO_LIST_COUNTRIES = GEO_LIST.filter((g) => g.code !== '')
 
-// Гео для инжеста trending-данных (должен совпадать с DashboardService::INGEST_GEOS)
-export const REALTIME_GEOS = GEO_LIST.filter((g) =>
-  ['US', 'GB', 'AU', 'CA', 'IN', 'DE', 'FR'].includes(g.code),
-)
+// Все страны для гео-селектора дашборда (совпадает с DashboardService::INGEST_GEOS)
+export const REALTIME_GEOS = GEO_LIST_COUNTRIES

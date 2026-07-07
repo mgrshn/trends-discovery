@@ -76,8 +76,8 @@ class IngestTrendingJob implements ShouldQueue
 
         Log::info("IngestTrendingJob: {$upserted} trends upserted for geo={$this->geo}");
 
-        // Queue sparkline fetch for this geo after ingestion
-        SparklineFetchJob::dispatch($this->geo)->onQueue('default');
+        // Queue sparkline fetch for this geo (limit 20 per geo — 51 geos total)
+        SparklineFetchJob::dispatch($this->geo, 20)->onQueue('default');
     }
 
     private function buildCategoryMap(): array

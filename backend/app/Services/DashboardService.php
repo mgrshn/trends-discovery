@@ -6,7 +6,13 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
-    private const INGEST_GEOS = ['US', 'GB', 'AU', 'CA', 'IN', 'DE', 'FR'];
+    private const INGEST_GEOS = [
+        'US', 'GB', 'CA', 'AU', 'DE', 'FR', 'IN', 'BR', 'MX', 'JP',
+        'KR', 'SG', 'NL', 'SE', 'NO', 'ES', 'IT', 'PL', 'RU', 'UA',
+        'ZA', 'NG', 'EG', 'AR', 'CL', 'CO', 'ID', 'PH', 'TH', 'VN',
+        'NZ', 'CH', 'AT', 'BE', 'PT', 'CZ', 'HU', 'RO', 'TR', 'IL',
+        'SA', 'AE', 'PK', 'BD', 'MY', 'HK', 'TW', 'GR', 'DK', 'FI', 'IE',
+    ];
 
     public static function ingestGeos(): array
     {
