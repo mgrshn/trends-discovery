@@ -1,0 +1,25 @@
+{$DOMAIN} {
+    # Laravel backend — API, admin, очереди, Livewire
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+    handle /admin* {
+        reverse_proxy backend:8000
+    }
+    handle /horizon* {
+        reverse_proxy backend:8000
+    }
+    handle /livewire* {
+        reverse_proxy backend:8000
+    }
+    handle /sanctum* {
+        reverse_proxy backend:8000
+    }
+
+    # React SPA
+    handle {
+        root * /srv/frontend
+        try_files {path} /index.html
+        file_server
+    }
+}

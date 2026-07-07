@@ -34,29 +34,30 @@ services:
       redis:
         condition: service_healthy
     environment:
-      APP_ENV:   production
-      APP_DEBUG: "false"
-      APP_KEY:   ${APP_KEY}
-      APP_URL:   ${APP_URL:-http://localhost}
-      DB_CONNECTION: pgsql
-      DB_HOST:       postgres
-      DB_PORT:       5432
-      DB_DATABASE:   ${DB_DATABASE:-discovery}
-      DB_USERNAME:   ${DB_USERNAME:-discovery}
-      DB_PASSWORD:   ${DB_PASSWORD}
-      REDIS_CLIENT:  predis
-      REDIS_HOST:    redis
-      REDIS_PORT:    6379
-      PARSER_URL:    ${PARSER_URL:-http://host.docker.internal:8000}
-      PARSER_API_KEY: ${PARSER_API_KEY:-}
+      APP_ENV:        production
+      APP_DEBUG:      "false"
+      APP_KEY:        ${APP_KEY}
+      APP_URL:        ${APP_URL}
+      DB_CONNECTION:  pgsql
+      DB_HOST:        postgres
+      DB_PORT:        5432
+      DB_DATABASE:    ${DB_DATABASE:-discovery}
+      DB_USERNAME:    ${DB_USERNAME:-discovery}
+      DB_PASSWORD:    ${DB_PASSWORD}
+      REDIS_CLIENT:   predis
+      REDIS_HOST:     redis
+      REDIS_PORT:     6379
+      PARSER_URL:     ${PARSER_URL:-http://parser:8000}
+      PARSER_API_KEY: ${PARSER_API_KEY}
       QUEUE_CONNECTION: redis
       CACHE_STORE:      redis
       SESSION_DRIVER:   redis
       LOG_CHANNEL:      stderr
     volumes:
       - backend_storage:/var/www/html/storage
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      - shared
 
   horizon:
     build:
@@ -70,79 +71,91 @@ services:
       redis:
         condition: service_healthy
     environment:
-      APP_ENV:   production
-      APP_DEBUG: "false"
-      APP_KEY:   ${APP_KEY}
-      APP_URL:   ${APP_URL:-http://localhost}
-      DB_CONNECTION: pgsql
-      DB_HOST:       postgres
-      DB_PORT:       5432
-      DB_DATABASE:   ${DB_DATABASE:-discovery}
-      DB_USERNAME:   ${DB_USERNAME:-discovery}
-      DB_PASSWORD:   ${DB_PASSWORD}
-      REDIS_CLIENT:  predis
-      REDIS_HOST:    redis
-      REDIS_PORT:    6379
-      PARSER_URL:    ${PARSER_URL:-http://host.docker.internal:8000}
-      PARSER_API_KEY: ${PARSER_API_KEY:-}
+      APP_ENV:        production
+      APP_DEBUG:      "false"
+      APP_KEY:        ${APP_KEY}
+      APP_URL:        ${APP_URL}
+      DB_CONNECTION:  pgsql
+      DB_HOST:        postgres
+      DB_PORT:        5432
+      DB_DATABASE:    ${DB_DATABASE:-discovery}
+      DB_USERNAME:    ${DB_USERNAME:-discovery}
+      DB_PASSWORD:    ${DB_PASSWORD}
+      REDIS_CLIENT:   predis
+      REDIS_HOST:     redis
+      REDIS_PORT:     6379
+      PARSER_URL:     ${PARSER_URL:-http://parser:8000}
+      PARSER_API_KEY: ${PARSER_API_KEY}
       QUEUE_CONNECTION: redis
       CACHE_STORE:      redis
       SESSION_DRIVER:   redis
       LOG_CHANNEL:      stderr
     volumes:
       - backend_storage:/var/www/html/storage
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      - shared
 
   scheduler:
     build:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    command: ["/bin/sh", "-c", "while true; do php artisan schedule:run --no-interaction; sleep 60; done"]
+    command: ["php", "artisan", "schedule:work"]
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     environment:
-      APP_ENV:   production
-      APP_DEBUG: "false"
-      APP_KEY:   ${APP_KEY}
-      APP_URL:   ${APP_URL:-http://localhost}
-      DB_CONNECTION: pgsql
-      DB_HOST:       postgres
-      DB_PORT:       5432
-      DB_DATABASE:   ${DB_DATABASE:-discovery}
-      DB_USERNAME:   ${DB_USERNAME:-discovery}
-      DB_PASSWORD:   ${DB_PASSWORD}
-      REDIS_CLIENT:  predis
-      REDIS_HOST:    redis
-      REDIS_PORT:    6379
-      PARSER_URL:    ${PARSER_URL:-http://host.docker.internal:8000}
-      PARSER_API_KEY: ${PARSER_API_KEY:-}
+      APP_ENV:        production
+      APP_DEBUG:      "false"
+      APP_KEY:        ${APP_KEY}
+      APP_URL:        ${APP_URL}
+      DB_CONNECTION:  pgsql
+      DB_HOST:        postgres
+      DB_PORT:        5432
+      DB_DATABASE:    ${DB_DATABASE:-discovery}
+      DB_USERNAME:    ${DB_USERNAME:-discovery}
+      DB_PASSWORD:    ${DB_PASSWORD}
+      REDIS_CLIENT:   predis
+      REDIS_HOST:     redis
+      REDIS_PORT:     6379
+      PARSER_URL:     ${PARSER_URL:-http://parser:8000}
+      PARSER_API_KEY: ${PARSER_API_KEY}
       QUEUE_CONNECTION: redis
       CACHE_STORE:      redis
       SESSION_DRIVER:   redis
       LOG_CHANNEL:      stderr
     volumes:
       - backend_storage:/var/www/html/storage
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
-  frontend:
+  caddy:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
+      context: .
+      dockerfile: Dockerfile.caddy
     restart: unless-stopped
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
-      - "${PUBLIC_PORT:-80}:80"
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      DOMAIN: ${DOMAIN}
     depends_on:
       - backend
+
+networks:
+  default:
+    driver: bridge
+  shared:
+    external: true
 
 volumes:
   postgres_data:
   redis_data:
   backend_storage:
+  caddy_data:
+  caddy_config:
