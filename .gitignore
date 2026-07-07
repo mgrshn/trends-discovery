@@ -1,0 +1,26 @@
+# секреты — НИКОГДА в git
+.env
+.env.*
+!.env.example
+auth.json
+*.pem
+*.key
+
+# php / laravel
+/backend/vendor/
+/backend/storage/*.key
+/backend/storage/framework/cache/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+/backend/storage/logs/*
+/backend/bootstrap/cache/*
+
+# node / react
+node_modules/
+/frontend/dist/
+/frontend/.vite/
+
+# прочее
+.DS_Store
+*.log
+/docs/ux/mcp-session/

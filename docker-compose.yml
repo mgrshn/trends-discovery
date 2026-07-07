@@ -1,0 +1,148 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-discovery}
+      POSTGRES_USER: ${DB_USERNAME:-discovery}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_EXTERNAL_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-discovery}"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-discovery}
+      DB_USERNAME: ${DB_USERNAME:-discovery}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PARSER_URL: ${PARSER_URL:-http://host.docker.internal:8000}
+      PARSER_API_KEY: ${PARSER_API_KEY:-}
+      QUEUE_CONNECTION: redis
+      CACHE_STORE: redis
+      SESSION_DRIVER: redis
+      LOG_CHANNEL: stderr
+    volumes:
+      - ./backend:/var/www/html
+      - backend_storage:/var/www/html/storage
+    ports:
+      - "${BACKEND_PORT:-8080}:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  horizon:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: ["php", "artisan", "horizon"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_KEY: ${APP_KEY:-}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-discovery}
+      DB_USERNAME: ${DB_USERNAME:-discovery}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PARSER_URL: ${PARSER_URL:-http://host.docker.internal:8000}
+      PARSER_API_KEY: ${PARSER_API_KEY:-}
+      QUEUE_CONNECTION: redis
+      LOG_CHANNEL: stderr
+    volumes:
+      - ./backend:/var/www/html
+      - backend_storage:/var/www/html/storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  scheduler:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: ["/bin/sh", "-c", "while true; do php artisan schedule:run --no-interaction; sleep 60; done"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_KEY: ${APP_KEY:-}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-discovery}
+      DB_USERNAME: ${DB_USERNAME:-discovery}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PARSER_URL: ${PARSER_URL:-http://host.docker.internal:8000}
+      PARSER_API_KEY: ${PARSER_API_KEY:-}
+      QUEUE_CONNECTION: redis
+      LOG_CHANNEL: stderr
+    volumes:
+      - ./backend:/var/www/html
+      - backend_storage:/var/www/html/storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      # BACKEND_URL: Docker-internal, used by Vite proxy (server-side, not bundled)
+      BACKEND_URL: http://backend:8000
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_storage:

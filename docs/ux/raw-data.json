@@ -1,0 +1,339 @@
+{
+  "trend-analysis": {
+    "text": "LOADING...\nCompany\nHome\nConnect\n\n548 Market St. Suite 95149\nSan Francisco, California",
+    "filters": {
+      "buttons": [],
+      "selects": []
+    },
+    "api": [],
+    "topics": [
+      {
+        "topic": "AI agents",
+        "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nYour Trend Dashboard\nWelcome! Get started by creating your first project\n\n Get deep-dive data on any trend.\n\n See products and startups before they go mainstream.\n\nBe the first to know when a new trend is about to take off.\n\nCreate Project\nRecommended Trends\nCategories\nBrowse Trends Database\nSkin barrier cream\n\n8.1K\n\nVolume\n\n+500%\n\nGrowth\n\n+ TRACK TOPIC\nPsychological safety\n\n27.1K\n\nVolume\n\n+486%\n\nGrowth\n\n+ TRACK TOPIC\nSuede blazer\n\n5.4K\n\nVolume\n\n+3500%\n\nGrowth\n\n+ TRACK TOPIC\nCashmere Shampoo\n\n590\n\nVolume\n\n+1000%\n\nGrowth\n\n+ TRACK TOPIC\nJapanese floor mattress\n\n40.5K\n\nVolume\n\n+479%\n\nGrowth\n\n+ TRACK TOPIC\nSuede jacket\n\n74K\n\nVolume\n\n+1083%\n\nGrowth\n\n+ TRACK TOPIC\nSmart posture corrector\n\n2.9K\n\nVolume\n\n+900%\n\nGrowth\n\n+ TRACK TOPIC\nPlant chocolate protein p...\n\n480\n\nVolume\n\n+875%\n\nGrowth\n\n+ TRACK TOPIC\nPortable cold plunge\n\n1.3K\n\nVolume\n\n+586%\n\nGrowth\n\n+ TRACK TOPIC\nSingle-cell rna sequencin...\n\n9.9K\n\nVolume\n\n+940%\n\nGrowth\n\n+ TRACK TOPIC\nSleep coach\n\n5.4K\n\nVolume\n\n+875%\n\nGrowth\n\n+ TRACK TOPIC\nNon-Slip Shoes\n\n110K\n\nVolume\n\n+800%\n\nGrowth\n\n+ TRACK TOPIC\nTopics You're Currently Tracking\nAll Projects\nView All Projects\nAdd Topics To Your Project\n\nUse our growing Trends Database of 1.1M+ topics to easily find emerging trends in dozens of different industries.\n\nFind Trends To Track\nTrending Products\nView All Products\nAI Shoes\n\n$82.7k",
+        "table": {
+          "headers": [
+            "Topic",
+            "TikTok Views",
+            "Total Views",
+            "TikTok Posts",
+            "Total Posts"
+          ],
+          "rows": [
+            [
+              "Barrier Moisturizer\nSkincare products designed to protect an",
+              "Past 12 months",
+              "123.6M\nPast 30 days\n+4.5K%\nvs. prev 30 days",
+              "Past 12 months",
+              "43\nPast 30 days\n+54%\nvs. prev 30 days"
+            ],
+            [
+              "B12 Gummies\nB12 gummies are a dietary supplement designed to",
+              "Past 12 months",
+              "11.5M\nPast 30 days\n+2.8K%\nvs. prev 30 days",
+              "Past 12 months",
+              "17\nPast 30 days\n-35%\nvs. prev 30 days"
+            ],
+            [
+              "Finger Exercise Equipment\nFinger exercise equipment encompas",
+              "Past 12 months",
+              "65.3M\nPast 30 days\n+2.7K%\nvs. prev 30 days",
+              "Past 12 months",
+              "6\nPast 30 days\n-79%\nvs. prev 30 days"
+            ]
+          ]
+        },
+        "api": [
+          {
+            "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+            "method": "POST",
+            "status": 200,
+            "bodySnippet": "{\"id\":\"9cbf7007486d437eac9b4326ca4e14c5\"}"
+          },
+          {
+            "url": "https://gs.amplitude.com/sdk/v1/config",
+            "method": "GET",
+            "status": 200,
+            "bodySnippet": "{\"nudges\":[{\"assistantIntro\":false,\"dir\":\"ltr\",\"displayDescription\":\"\",\"displayTitle\":\"\",\"doneLabel\":\"Done\",\"flagKey\":\"survey-customer-segment-sur\",\"hideIfPageTargetingNotMet\":false,\"isCarousel\":false,\"isDismissible\":true,\"isSnoozable\":true,\"isSnoozableOnAllSteps\":true,\"lifecycleConfig\":{\"conditions\":[[{\"op\":\"is not\",\"selector\":[\"context\",\"nudgeState\",\"isCompleted\"],\"values\":[\"true\"]},{\"op\":\"is not\",\"selector\":[\"context\",\"nudgeState\",\"isDismissed\"],\"values\":[\"true\"]}]],\"cooldownLimits\":[],\"stopS"
+          },
+          {
+            "url": "https://gs.amplitude.com/sdk/v1/resource_center",
+            "method": "GET",
+            "status": 200,
+            "bodySnippet": "{\"resourceCenters\":[{\"appId\":708896,\"chatEnabled\":false,\"defaultTab\":\"resource_center\",\"imageUploadEnabled\":true,\"isAutopilotEnabled\":true,\"key\":\"nudge-resource-center\",\"resourceCenterEnabled\":true,\"showBranding\":false,\"showNegativeFeedbackDropdown\":true,\"showQuickLinks\":false,\"showRecsetHeroCards\":false,\"textStrings\":{\"backButtonLabel\":\"Back\",\"featuredContentLabel\":\"Recommended\",\"headerLabel\":\"Resource Center\",\"noResultsDescription\":\"Try another keyword or check your spelling\",\"noResultsTitle\":"
+          },
+          {
+            "url": "https://gs.amplitude.com/sdk/v1/decide",
+            "method": "GET",
+            "status": 200,
+            "bodySnippet": "{\"survey-customer-segment-sur\":{\"key\":\"treatment-voww\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381661721_1827334708\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-voww\"},\"survey-tiktok-insights-feed\":{\"key\":\"treatment-3r57\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381661721_1827334708\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-3r57\"}}"
+          },
+          {
+            "url": "https://ac.explodingtopics.com/api/getAvailableProSearches",
+            "method": "GET",
+            "status": 200,
+            "bodySnippet": "{\"used\":1,\"total\":100}"
+          },
+          {
+            "url": "https://gs.amplitude.com/sdk/v1/state",
+            "method": "GET",
+            "status": 200,
+            "bodySnippet": "{\"ampIdToken\":\"Wj72vRdKcsFaPvfB1INjQPj-cI0nqoYS\",\"nudgeInteractions\":{\"15008\":{\"activatedTs\":[1783084075005],\"activelifeCycleUuid\":\"\",\"completedTs\":[],\"currentStep\":0,\"dismissedTs\":[1783354533609],\"formFactor\":\"popover\",\"isChecklistExpanded\":true,\"isCompleted\":false,\"isDismissed\":true,\"lastSeenDeviceId\":\"6a47b41a00147cf77afca1ed\",\"lastSeenSessionId\":-1,\"lastSeenTs\":1783354531148,\"lastUpdatedTs\":1783354533609,\"snoozedUntilTs\":-1,\"stepIndexStack\":[],\"steps\":{},\"tagIds\":[],\"type\":\"survey\"},\"20834\":"
+          },
+          {
+            "url": "https://gs.amplitude.com/sdk/v1/decide",
+            "method": "GET",
+            "status": 200,
+            "bodySnippet": "{\"survey-customer-segment-sur\":{\"key\":\"treatment-voww\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381662474_713040139\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-voww\"},\"survey-tiktok-insights-feed\":{\"key\":\"treatment-3r57\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381662474_713040139\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-3r57\"}}"
+          },
+          {
+            "url": "https://ac.explodingtopics.com/api/tiktok-insights",
+            "method": "GET",
+            "status": 200,
+            "bodySnippet": "{\"trends\":[{\"_id\":\"2ANhQAQwLmd7n9NMZ\",\"keyword\":\"Barrier moisturizer\",\"topic\":\"Keyword\",\"path\":\"barrier-moisturizer\",\"briefDescription\":\"Skincare products designed to protect and repair the skin's natural barrier. They are often used to help with conditions like dry skin, eczema, or other forms of dermatitis by locking in moisture and protecting the skin from environmental stressors. These moisturizers are beneficial for individuals with compromised skin barriers seeking to maintain skin hydrati"
+          }
+        ]
+      },
+      {
+        "topic": "breathwork",
+        "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nYour Trend Dashboard\nWelcome! Get started by creating your first project\n\n Get deep-dive data on any trend.\n\n See products and startups before they go mainstream.\n\nBe the first to know when a new trend is about to take off.\n\nCreate Project\nRecommended Trends\nCategories\nBrowse Trends Database\nSkin barrier cream\n\n8.1K\n\nVolume\n\n+500%\n\nGrowth\n\n+ TRACK TOPIC\nPsychological safety\n\n27.1K\n\nVolume\n\n+486%\n\nGrowth\n\n+ TRACK TOPIC\nSuede blazer\n\n5.4K\n\nVolume\n\n+3500%\n\nGrowth\n\n+ TRACK TOPIC\nCashmere Shampoo\n\n590\n\nVolume\n\n+1000%\n\nGrowth\n\n+ TRACK TOPIC\nJapanese floor mattress\n\n40.5K\n\nVolume\n\n+479%\n\nGrowth\n\n+ TRACK TOPIC\nSuede jacket\n\n74K\n\nVolume\n\n+1083%\n\nGrowth\n\n+ TRACK TOPIC\nSmart posture corrector\n\n2.9K\n\nVolume\n\n+900%\n\nGrowth\n\n+ TRACK TOPIC\nPlant chocolate protein p...\n\n480\n\nVolume\n\n+875%\n\nGrowth\n\n+ TRACK TOPIC\nPortable cold plunge\n\n1.3K\n\nVolume\n\n+586%\n\nGrowth\n\n+ TRACK TOPIC\nSingle-cell rna sequencin...\n\n9.9K\n\nVolume\n\n+940%\n\nGrowth\n\n+ TRACK TOPIC\nSleep coach\n\n5.4K\n\nVolume\n\n+875%\n\nGrowth\n\n+ TRACK TOPIC\nNon-Slip Shoes\n\n110K\n\nVolume\n\n+800%\n\nGrowth\n\n+ TRACK TOPIC\nTopics You're Currently Tracking\nAll Projects\nView All Projects\nAdd Topics To Your Project\n\nUse our growing Trends Database of 1.1M+ topics to easily find emerging trends in dozens of different industries.\n\nFind Trends To Track\nTrending Products\nView All Products\nAI Shoes\n\n$82.7k",
+        "table": {
+          "headers": [
+            "Topic",
+            "TikTok Views",
+            "Total Views",
+            "TikTok Posts",
+            "Total Posts"
+          ],
+          "rows": [
+            [
+              "Barrier Moisturizer\nSkincare products designed to protect an",
+              "Past 12 months",
+              "123.6M\nPast 30 days\n+4.5K%\nvs. prev 30 days",
+              "Past 12 months",
+              "43\nPast 30 days\n+54%\nvs. prev 30 days"
+            ],
+            [
+              "B12 Gummies\nB12 gummies are a dietary supplement designed to",
+              "Past 12 months",
+              "11.5M\nPast 30 days\n+2.8K%\nvs. prev 30 days",
+              "Past 12 months",
+              "17\nPast 30 days\n-35%\nvs. prev 30 days"
+            ],
+            [
+              "Finger Exercise Equipment\nFinger exercise equipment encompas",
+              "Past 12 months",
+              "65.3M\nPast 30 days\n+2.7K%\nvs. prev 30 days",
+              "Past 12 months",
+              "6\nPast 30 days\n-79%\nvs. prev 30 days"
+            ]
+          ]
+        },
+        "api": []
+      }
+    ]
+  },
+  "trend-tracking": {
+    "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nTrend Tracking\nCreate New Project\nExport Projects To CSV\nInitial Project\nAdd Topics\nNo topics tracked\n\nMade with ❤️ by data nerds",
+    "filters": {
+      "buttons": [
+        "Export Projects To CSV"
+      ],
+      "selects": []
+    },
+    "api": [
+      {
+        "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"id\":\"61c2ce618e544c2f8c1c7be083338e85\"}"
+      }
+    ]
+  },
+  "tiktok-insights": {
+    "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nTrend Tracking\nCreate New Project\nExport Projects To CSV\nInitial Project\nAdd Topics\nNo topics tracked\n\nMade with ❤️ by data nerds",
+    "table": null,
+    "filters": {
+      "buttons": [
+        "Export Projects To CSV"
+      ],
+      "selects": []
+    },
+    "api": [
+      {
+        "url": "https://gs.amplitude.com/sdk/v1/state",
+        "method": "GET",
+        "status": 200,
+        "bodySnippet": "{\"ampIdToken\":\"Wj72vRdKcsFaPvfB1INjQPj-cI0nqoYS\",\"nudgeInteractions\":{\"15008\":{\"activatedTs\":[1783084075005],\"activelifeCycleUuid\":\"\",\"completedTs\":[],\"currentStep\":0,\"dismissedTs\":[1783354533609],\"formFactor\":\"popover\",\"isChecklistExpanded\":true,\"isCompleted\":false,\"isDismissed\":true,\"lastSeenDeviceId\":\"6a47b41a00147cf77afca1ed\",\"lastSeenSessionId\":-1,\"lastSeenTs\":1783354531148,\"lastUpdatedTs\":1783354533609,\"snoozedUntilTs\":-1,\"stepIndexStack\":[],\"steps\":{},\"tagIds\":[],\"type\":\"survey\"},\"20834\":"
+      },
+      {
+        "url": "https://gs.amplitude.com/sdk/v1/decide",
+        "method": "GET",
+        "status": 200,
+        "bodySnippet": "{\"survey-customer-segment-sur\":{\"key\":\"treatment-voww\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381725043_202492185\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-voww\"},\"survey-tiktok-insights-feed\":{\"key\":\"treatment-3r57\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381725043_202492185\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-3r57\"}}"
+      },
+      {
+        "url": "https://ac.explodingtopics.com/api/getAvailableProSearches",
+        "method": "GET",
+        "status": 200,
+        "bodySnippet": "{\"used\":1,\"total\":100}"
+      },
+      {
+        "url": "https://ac.explodingtopics.com/api/user/getTeammates",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"teammates\":[{\"_id\":\"6a47b41a00147cf77afca1ed\",\"viewer_id\":\"30083091\",\"email\":\"administrator@vallror.one\",\"pro\":{\"apiKey\":\"o5qxy6inko3mcyE66\",\"status\":\"TRIAL\",\"tier\":\"investor\",\"aweberPresent\":true,\"aweberTier\":\"investor\"},\"activeSubscriptions\":[\"f0b7244e-9321-487f-8d12-980674052373\"],\"isProductActive\":true,\"isAccountOwner\":true,\"createdAt\":1783084058,\"projects\":[{\"name\":\"Initial Project\",\"topics\":[]}],\"availableTrials\":[\"60e062b1-2ef4-48a1-bfd6-15c18c8ebb2f\",\"19a6bb66-ed71-44c0-8dba-5895e17d32"
+      },
+      {
+        "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"id\":\"f4566e1de1a84507bfc189ae5ff3ba84\"}"
+      }
+    ]
+  },
+  "trending-startups": {
+    "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nTrend Tracking\nCreate New Project\nExport Projects To CSV\nInitial Project\nAdd Topics\nNo topics tracked\n\nMade with ❤️ by data nerds",
+    "table": null,
+    "filters": {
+      "buttons": [
+        "Export Projects To CSV"
+      ],
+      "selects": []
+    },
+    "api": [
+      {
+        "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"id\":\"bc7da097bfec4052a4e1c5869631477a\"}"
+      },
+      {
+        "url": "https://gs.amplitude.com/sdk/v1/decide",
+        "method": "GET",
+        "status": 200,
+        "bodySnippet": "{\"survey-customer-segment-sur\":{\"key\":\"treatment-voww\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381734372_1877365311\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-voww\"},\"survey-tiktok-insights-feed\":{\"key\":\"treatment-3r57\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381734372_1877365311\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-3r57\"}}"
+      },
+      {
+        "url": "https://ac.explodingtopics.com/api/getAvailableProSearches",
+        "method": "GET",
+        "status": 200,
+        "bodySnippet": "{\"used\":1,\"total\":100}"
+      },
+      {
+        "url": "https://ac.explodingtopics.com/api/user/getTeammates",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"teammates\":[{\"_id\":\"6a47b41a00147cf77afca1ed\",\"viewer_id\":\"30083091\",\"email\":\"administrator@vallror.one\",\"pro\":{\"apiKey\":\"o5qxy6inko3mcyE66\",\"status\":\"TRIAL\",\"tier\":\"investor\",\"aweberPresent\":true,\"aweberTier\":\"investor\"},\"activeSubscriptions\":[\"f0b7244e-9321-487f-8d12-980674052373\"],\"isProductActive\":true,\"isAccountOwner\":true,\"createdAt\":1783084058,\"projects\":[{\"name\":\"Initial Project\",\"topics\":[]}],\"availableTrials\":[\"60e062b1-2ef4-48a1-bfd6-15c18c8ebb2f\",\"19a6bb66-ed71-44c0-8dba-5895e17d32"
+      },
+      {
+        "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"id\":\"f0e7a1df7f0b47b5a5084cd5f7017358\"}"
+      }
+    ]
+  },
+  "trending-products": {
+    "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nTrend Tracking\nCreate New Project\nExport Projects To CSV\nInitial Project\nAdd Topics\nNo topics tracked\n\nMade with ❤️ by data nerds",
+    "table": null,
+    "filters": {
+      "buttons": [
+        "Export Projects To CSV"
+      ],
+      "selects": []
+    },
+    "api": [
+      {
+        "url": "https://gs.amplitude.com/sdk/v1/state",
+        "method": "GET",
+        "status": 200,
+        "bodySnippet": "{\"ampIdToken\":\"Wj72vRdKcsFaPvfB1INjQPj-cI0nqoYS\",\"nudgeInteractions\":{\"15008\":{\"activatedTs\":[1783084075005],\"activelifeCycleUuid\":\"\",\"completedTs\":[],\"currentStep\":0,\"dismissedTs\":[1783354533609],\"formFactor\":\"popover\",\"isChecklistExpanded\":true,\"isCompleted\":false,\"isDismissed\":true,\"lastSeenDeviceId\":\"6a47b41a00147cf77afca1ed\",\"lastSeenSessionId\":-1,\"lastSeenTs\":1783354531148,\"lastUpdatedTs\":1783354533609,\"snoozedUntilTs\":-1,\"stepIndexStack\":[],\"steps\":{},\"tagIds\":[],\"type\":\"survey\"},\"20834\":"
+      },
+      {
+        "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"id\":\"08c816aead904a369f11c1a92f218169\"}"
+      },
+      {
+        "url": "https://gs.amplitude.com/sdk/v1/decide",
+        "method": "GET",
+        "status": 200,
+        "bodySnippet": "{\"survey-customer-segment-sur\":{\"key\":\"treatment-voww\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381744044_1764878993\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-voww\"},\"survey-tiktok-insights-feed\":{\"key\":\"treatment-3r57\",\"metadata\":{\"evaluationId\":\"1635371958433_1783381744044_1764878993\",\"segmentName\":\"All Other Users\"},\"value\":\"treatment-3r57\"}}"
+      },
+      {
+        "url": "https://ac.explodingtopics.com/api/getAvailableProSearches",
+        "method": "GET",
+        "status": 200,
+        "bodySnippet": "{\"used\":1,\"total\":100}"
+      },
+      {
+        "url": "https://ac.explodingtopics.com/api/user/getTeammates",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"teammates\":[{\"_id\":\"6a47b41a00147cf77afca1ed\",\"viewer_id\":\"30083091\",\"email\":\"administrator@vallror.one\",\"pro\":{\"apiKey\":\"o5qxy6inko3mcyE66\",\"status\":\"TRIAL\",\"tier\":\"investor\",\"aweberPresent\":true,\"aweberTier\":\"investor\"},\"activeSubscriptions\":[\"f0b7244e-9321-487f-8d12-980674052373\"],\"isProductActive\":true,\"isAccountOwner\":true,\"createdAt\":1783084058,\"projects\":[{\"name\":\"Initial Project\",\"topics\":[]}],\"availableTrials\":[\"60e062b1-2ef4-48a1-bfd6-15c18c8ebb2f\",\"19a6bb66-ed71-44c0-8dba-5895e17d32"
+      },
+      {
+        "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"id\":\"34c32b5785734cf4bc5d15e266310bea\"}"
+      }
+    ]
+  },
+  "meta-trends": {
+    "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nMeta Trends\nTrending Car Accessories\nView Analysis\nBike Accessories Trending In 2026\nView Analysis\nThe Smart Kitchen Revolution\nView Analysis\nPet Products\nView Analysis\nBarrier Repair Skincare\nView Analysis\nDoomsday Preparation\nView Analysis\nNext Gen Beauty\nView Analysis\nBeauty Devices & Hardware\nView Analysis\nAI Marketing Tools\nView Analysis\nAI Infused Products\nView Analysis\nTrending Beverages\nView Analysis\nBatteries Everywhere\nView Analysis\nNatural Anti Inflammatories\nView Analysis\nDocking And Charging\nView Analysis\nTravel Gadgets\nView Analysis\nLongevity Skincare\nView Analysis\nLongevity Supplements\nView Analysis\nCollagen Craze\nView Analysis\nNatural Ozempic Alternatives\nView Analysis\nProtein Everywhere\nView Analysis\nMan's Best Friend\nView Analysis\nFurniture Essentials\nView Analysis\nHydration Essentials\nView Analysis\nPeptides Everywhere\nView Analysis\nSleep Tight\nView Analysis\nMeditation Essentials\nView Analysis\nTravel Friendly Skincare\nView Analysis\nNext Gen Haircare\nView Analysis\nGame Night\nView Analysis\nGeek Gifts And Gadgets\nView Analysis\nPet Accessories\nView Analysis\nNew Fitness And Nutrition Trends\nView Analysis\nApartment-Friendly Fitness\nView Analysis\nBackyard Micro-Escapes\nView Analysis\nDIY Content Creator Audio\nView Analysis\nADHD-Friendly Productivity Tools\nView Analysis\nHoliday Tech Gifts\nView Analysis\nHome Scent & Mood\nView Analysis\nCozy Reading Nooks\nView Analysis\nTravel-Friendly Wellness\nView Analysis\nVanlife Power & Water\nView Analysis\nSmart Sleep Upgrades\nView Analysis\nSkin Barrier Strengthener\nView Analysis\nNext Gen Face Care\nView Analysis\nFocus Enhancement\nView Analysis\nScent Upgrades\nView Analysis\nE-Readers And Digital Notepads\nView Analysis\nNext Gen Video Creation\nView Analysis\nRemote Work Tech\nView Analysis\nFuturistic Home Products\nView Analysis\nDIY Home Improvement Finds\nView Analysis\nCompact Home Gym Gear\nView Analysis\nBeauty Supplements\nView Analysis\nAI Protection\nView Analysis\nHome Office Upgrades\nView Analysis\nHome Decor\nView Analysis\nEverything Is AI\nView Analysis\nMindfulness & Meditation Tools\nView Analysis\nSmart Kitchen Upgrades\nView Analysis\nFace Masks\nView Analysis\nHydration Hacks\nView Analysis\nOutdoor Entertainment Essentials\nView Analysis\nAt-Home Spa Essentials\nView Analysis\nPet Travel Must-Haves\nView Analysis\nHealthy Snacks\nView Analysis\nGen Alpha Gaming\nView Analysis\nTrending Mobile Accessories\nView Analysis\nTrending Gifts For Her\nView Analysis\nWrinkle Removers\nView Analysis\nHigh Tech Fashion\nView Analysis\nViral Hair Protection\nView Analysis\nPhysical Therapy\nView Analysis\nMovie Night\nView Analysis\nInterior Design\nView Analysis\nLet's Go Hiking\nView Analysis\nEco-Friendly Gadgets\nView Analysis\nHome Accessories\nView Analysis\nCamping Essentials\nView Analysis\nRoad Trip Accessories\nView Analysis\nCooking Accessories\nView Analysis\nCollagen Boosters\nView Analysis\nGummies Everywhere\nView Analysis\nHealthy Hearts\nView Analysis\nFitness Recovery\nView Analysis\nWork Gadgets\nView Analysis\nPet Supplies\nView Analysis\nTrending Supplements\nView Analysis\nSleep Tight\nView Analysis\nSummer Vacation\nView Analysis\nSunscreen Everywhere\nView Analysis\nSmart Living\nView Analysis\nGeek Gifts\nView Analysis\nBiking Accessories\nView Analysis\nAnti Inflammatory Solutions\nView Analysis\nMaternity Trends\nView Analysis\nDTC Sports\nView Analysis\nEducation Devices\nView Analysis\nFlavortown\nView Analysis\nBaby On Board\nView Analysis\nRejuvination Beauty Essentials\nView Analysis\nGadgets For Men\nView Analysis\nContent Creator Essentials\nView Analysis\nCar Accessories\nView Analysis\nCoffee Accessories\nView Analysis\nTween Gifts\nView Analysis\nKitchen Gadgets\nView Analysis\nFuturistic Cleaning\nView Analysis\nHair Growth Treatments\nView Analysis\nLegal AI Tools\nView Analysis\nNon-Alcoholic Alcohol\nView Analysis\nOdor Control\nView Analysis\nTrending Furniture\nView Analysis\nSustainable Home Finds\nView Ana",
+    "table": null,
+    "filters": {
+      "buttons": [],
+      "selects": []
+    },
+    "api": [
+      {
+        "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"id\":\"c56f1e1527f5497bb532527a2888041e\"}"
+      }
+    ]
+  },
+  "reports-library": {
+    "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nSelect Your Plan To Get Started\nEntrepreneur\n$39\n/mo\nTrends Database\n100 Tracked Trends\nTrending Products\nMeta Trends\nChannel Breakdown\n10 Trend Analyses\nInvestor\n$99\n/mo\nTrends Database\n500 Tracked Trends\nTrending Products\nTrending Startups\nMeta Trends\nChannel Breakdown\nTrend Forecasting\n100 Trend Analyses\nCSV Export\nCurrent Plan\nBusiness\n$249\n/mo\nTrends Database\n2,000 Tracked Trends\nTrending Products\nTrending Startups\nMeta Trends\nChannel Breakdown\nTrend Forecasting\n500 Trend Analyses\nCSV Export\nTrend Reports\nUpgrade\n\nMade with ❤️ by data nerds",
+    "table": null,
+    "filters": {
+      "buttons": [
+        "Current Plan",
+        "Upgrade"
+      ],
+      "selects": []
+    },
+    "api": [
+      {
+        "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"id\":\"36ee21bba5c84deb998b99557f71fbc9\"}"
+      }
+    ]
+  },
+  "dashboard": {
+    "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nYour Trend Dashboard\nWelcome! Get started by creating your first project\n\n Get deep-dive data on any trend.\n\n See products and startups before they go mainstream.\n\nBe the first to know when a new trend is about to take off.\n\nCreate Project\nRecommended Trends\nCategories\nBrowse Trends Database\nShoe washing bag\n\n18.1K\n\nVolume\n\n+492%\n\nGrowth\n\n+ TRACK TOPIC\nSkin barrier cream\n\n8.1K\n\nVolume\n\n+500%\n\nGrowth\n\n+ TRACK TOPIC\nMagnetic power bank\n\n22.2K\n\nVolume\n\n+500%\n\nGrowth\n\n+ TRACK TOPIC\nFloral mini dress\n\n33.1K\n\nVolume\n\n+750%\n\nGrowth\n\n+ TRACK TOPIC\nNon-Slip Shoes\n\n110K\n\nVolume\n\n+800%\n\nGrowth\n\n+ TRACK TOPIC\nFloral earrings\n\n5.4K\n\nVolume\n\n+2900%\n\nGrowth\n\n+ TRACK TOPIC\nPilates ring\n\n33.1K\n\nVolume\n\n+529%\n\nGrowth\n\n+ TRACK TOPIC\nNon-slip rug\n\n5.4K\n\nVolume\n\n+800%\n\nGrowth\n\n+ TRACK TOPIC\nJapanese floor mattress\n\n40.5K\n\nVolume\n\n+479%\n\nGrowth\n\n+ TRACK TOPIC\nPsychological safety\n\n27.1K\n\nVolume\n\n+486%\n\nGrowth\n\n+ TRACK TOPIC\nPortable cold plunge\n\n1.3K\n\nVolume\n\n+586%\n\nGrowth\n\n+ TRACK TOPIC\nSpinner suitcase\n\n1.3K\n\nVolume\n\n+850%\n\nGrowth\n\n+ TRACK TOPIC\nTopics You're Currently Tracking\nAll Projects\nView All Projects\nAdd Topics To Your Project\n\nUse our growing Trends Database of 1.1M+ topics to easily find emerging trends in dozens of different industries.\n\nFind Trends To Track\nTrending Products\nView All Products\nBarn jacket\n\n$30k\n\nAvg. Revenue\n\n+7800%\n\nGrowth\n\n+ TRACK TOPIC\nPortable solar heater\n\n$34.1k\n\nAvg. Revenue\n\n+9500%\n\nGrowth\n\n+ TRACK TOPIC\nSmart Blender\n\n$873.6k\n\nAvg. Revenue\n\n+8000%\n\nGrowth\n\n+ TRACK TOPIC\nAI Shoes\n\n$82.7k\n\nAvg. Revenue\n\n+99X+\n\nGrowth\n\n+ TRACK TOPIC\nAI Mini PC\n\n$146.8k\n\nAvg. Revenue\n\n+8100%\n\nGrowth\n\n+ TRACK TOPIC\nSmart yoga mat\n\n$325.7k\n\nAvg. Revenue\n\n+7800%\n\nGrowth\n\n+ TRACK TOPIC\nCollar camera\n\n$5.2k\n\nAvg. Revenue\n\n+8300%\n\nGrowth\n\n+ TRACK TOPIC\nAI Pet camera\n\n$173.9k\n\nAvg. Revenue\n\n+99X+\n\nGrowth\n\n+ TRACK TOPIC\nFoldable bluetooth keyboard\n\n$13.1k\n\nAvg. Revenue\n\n+8300%\n\nGrowth\n\n+ TRACK TOPIC\nCollagen Jelly Cream\n\n$830.3k\n\nAvg. Revenue\n\n+7700%\n\nGrowth\n\n+ TRACK TOPIC\nCordless blender\n\n$433.5k\n\nAvg. Revenue\n\n+8400%\n\nGrowth\n\n+ TRACK TOPIC\nSlim Toaster\n\n$405.5k\n\nAvg. Revenue\n\n+9000%\n\nGrowth\n\n+ TRACK TOPIC\nTikTok Insights\nView All TikTok Insights\nTopic\tTikTok Views\t\nTotal Views\n\t\nTikTok Posts\n\t\nTotal Posts\n\n\nBarrier Moisturizer\nSkincare products designed to protect and repair the skin's natural barrier. They are often used to help with conditions like dry skin, eczema, or other forms of dermatitis by locking in moisture and protecting the skin from environmental stressors. These moisturizers are beneficial for individuals with compromised skin barriers seeking to maintain skin hydration and health.\n\t\nPast 12 months\n\t\n123.6M\nPast 30 days\n+4.5K%\nvs. prev 30 days\n\t\nPast 12 months\n\t\n43\nPast 30 days\n+54%\nvs. prev 30 days\n\t\n\n\nB12 Gummies\nB12 gummies are a dietary supplement designed to provide a convenient and palatable way to intake Vitamin B12, which is essential for energy metabolism and maintaining overall energy levels. These gummies are available in various flavors and dosages, with popular brands including Nature Made and Vitafusion, and are generally well-reviewed for their taste and effectiveness. B12 gummies are particularly beneficial for individuals who have difficulty swallowing pills or need to boost their Vitamin B12 intake due to dietary restrictions or deficiencies.\n\t\nPast 12 months\n\t\n11.5M\nPast 30 days\n+2.8K%\nvs. prev 30 days\n\t\nPast 12 months\n\t\n17\nPast 30 days\n-35%\nvs. prev 30 days\n\n\nFinger Exercise Equipment\nFinger exercise equipment encompasses various tools such as hand grippers, finger stretchers, therapy putty, finger exercisers, grip balls, resistance bands, and finger weights. These devices are designed to enhance the strength and dexterity of the fingers, hands, and forearms, providing value for improving grip strength, flexibility, and overall hand health. Th",
+    "api": [
+      {
+        "url": "https://www.semrush.com/_sentry/api/312/envelope/",
+        "method": "POST",
+        "status": 200,
+        "bodySnippet": "{\"id\":\"289d967851034e249ad68967fb3bcedc\"}"
+      }
+    ]
+  },
+  "trends-database": {
+    "text": "Dashboard\nTrend Tracking\nTrends Database\nTikTok Insights\nBETA\nTrend Analysis\nTrending Startups\nTrending Products\nMeta Trends\nReports Library\nAPI Access\nUpgrade\nTrends Database\nBusiness379,547\nTechnology244,228\nBeauty125,864\nHealth & Wellness323,082\nHome59,565\nEntertainment87,086\nFashion50,613\nFinance68,082\nFood & Beverage98,743\nIndustry159,238\nLifestyle & Culture132,853\nRetail136,483\nProductivity100,640\nSupply Chain & Logistics24,616\nMarketing37,919\nCybersecurity23,970\nHuman Resources14,704\nLegal9,194\nReal Estate9,845\nWorkplace22,176\n\nMade with ❤️ by data nerds",
+    "table": null,
+    "filters": {
+      "buttons": [],
+      "selects": []
+    },
+    "api": []
+  }
+}
