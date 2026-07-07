@@ -2,6 +2,9 @@ import { useEffect, useState, useCallback } from 'react'
 import TrendCard from '../components/TrendCard'
 import type { TrendTopic, Category } from '../api/dashboard'
 import { fetchDashboard, fetchCategories } from '../api/dashboard'
+import { REALTIME_GEOS } from '../constants/geos'
+
+type Mode = 'realtime' | 'longterm'
 
 const PER_PAGE = 20
 
@@ -9,6 +12,8 @@ export default function DashboardPage() {
   const [topics, setTopics] = useState<TrendTopic[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
+  const [mode, setMode] = useState<Mode>('realtime')
+  const [geo, setGeo] = useState<string>('US')
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -19,12 +24,14 @@ export default function DashboardPage() {
   }, [])
 
   const load = useCallback(
-    async (cat: number | null, pg: number) => {
+    async (cat: number | null, pg: number, m: Mode, g: string) => {
       setLoading(true)
       setError(null)
       try {
         const result = await fetchDashboard({
           category: cat ?? undefined,
+          geo: g || undefined,
+          mode: m,
           page: pg,
           per_page: PER_PAGE,
         })
@@ -40,11 +47,22 @@ export default function DashboardPage() {
   )
 
   useEffect(() => {
-    load(selectedCategory, page)
-  }, [selectedCategory, page, load])
+    load(selectedCategory, page, mode, geo)
+  }, [selectedCategory, page, mode, geo, load])
 
   function selectCategory(id: number | null) {
     setSelectedCategory(id)
+    setPage(1)
+  }
+
+  function selectMode(m: Mode) {
+    setMode(m)
+    setPage(1)
+    setSelectedCategory(null)
+  }
+
+  function selectGeo(g: string) {
+    setGeo(g)
     setPage(1)
   }
 
@@ -52,10 +70,53 @@ export default function DashboardPage() {
 
   return (
     <div className="p-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Recommended Trends</h1>
-        <p className="text-gray-500 mt-1">Trending topics discovered from Google Trends</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Recommended Trends</h1>
+          <p className="text-gray-500 mt-1">Trending topics discovered from Google Trends</p>
+        </div>
+
+        {/* Mode toggle */}
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
+          <button
+            onClick={() => selectMode('realtime')}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              mode === 'realtime'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Real-time
+          </button>
+          <button
+            onClick={() => selectMode('longterm')}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              mode === 'longterm'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Long-term
+          </button>
+        </div>
       </div>
+
+      {/* Geo selector (Real-time only — Trending Now doesn't support Worldwide) */}
+      {mode === 'realtime' && (
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-sm text-gray-500 shrink-0">Country:</span>
+          <select
+            value={geo}
+            onChange={(e) => selectGeo(e.target.value)}
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+          >
+            {REALTIME_GEOS.map((g) => (
+              <option key={g.code} value={g.code}>{g.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Category filter pills */}
       <div className="flex flex-wrap gap-2 mb-6">
@@ -110,8 +171,19 @@ export default function DashboardPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
           </div>
-          <p className="text-gray-500 text-sm">No trending topics yet.</p>
-          <p className="text-gray-400 text-xs mt-1">The ingestion job runs every 30 minutes.</p>
+          {mode === 'longterm' ? (
+            <>
+              <p className="text-gray-600 text-sm font-medium">Long-term trends coming soon</p>
+              <p className="text-gray-400 text-xs mt-1 max-w-xs">
+                Long-term view will show scored trends after the scoring pipeline is built (Stage 3).
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-gray-500 text-sm">No trending topics yet.</p>
+              <p className="text-gray-400 text-xs mt-1">The ingestion job runs every 30 minutes.</p>
+            </>
+          )}
         </div>
       ) : (
         <>

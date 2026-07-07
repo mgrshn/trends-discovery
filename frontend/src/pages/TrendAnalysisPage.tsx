@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { fetchAnalysis, type AnalysisResult } from '../api/analysis'
-import { GEO_LIST, PERIOD_OPTIONS } from '../constants/geos'
+import { GEO_LIST, PERIOD_OPTIONS, ENGINE_OPTIONS } from '../constants/geos'
 import TrendChart from '../components/TrendChart'
 import RelatedQueries from '../components/RelatedQueries'
 import RegionsList from '../components/RegionsList'
@@ -67,6 +67,7 @@ export default function TrendAnalysisPage() {
   const [input, setInput] = useState(searchParams.get('keyword') ?? '')
   const [geo, setGeo] = useState(searchParams.get('geo') ?? '')
   const [period, setPeriod] = useState(searchParams.get('period') ?? '12m')
+  const [engine, setEngine] = useState(searchParams.get('engine') ?? 'web')
 
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [loading, setLoading] = useState(false)
@@ -75,7 +76,7 @@ export default function TrendAnalysisPage() {
   const abortRef = useRef<AbortController | null>(null)
 
   const search = useCallback(
-    async (keyword: string, geoCode: string, periodVal: string) => {
+    async (keyword: string, geoCode: string, periodVal: string, engineVal: string) => {
       if (!keyword.trim()) return
 
       abortRef.current?.abort()
@@ -84,10 +85,10 @@ export default function TrendAnalysisPage() {
       setLoading(true)
       setError(null)
 
-      setSearchParams({ keyword, geo: geoCode, period: periodVal }, { replace: true })
+      setSearchParams({ keyword, geo: geoCode, period: periodVal, engine: engineVal }, { replace: true })
 
       try {
-        const data = await fetchAnalysis(keyword.trim(), geoCode, periodVal)
+        const data = await fetchAnalysis(keyword.trim(), geoCode, periodVal, engineVal)
         setResult(data)
       } catch (e: unknown) {
         if ((e as Error).name !== 'AbortError') {
@@ -103,28 +104,33 @@ export default function TrendAnalysisPage() {
   // Auto-search on mount if keyword in URL
   useEffect(() => {
     const kw = searchParams.get('keyword')
-    if (kw) search(kw, geo, period)
+    if (kw) search(kw, geo, period, engine)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    search(input, geo, period)
+    search(input, geo, period, engine)
   }
 
   function handleGeoChange(newGeo: string) {
     setGeo(newGeo)
-    if (result) search(result.keyword, newGeo, period)
+    if (result) search(result.keyword, newGeo, period, engine)
   }
 
   function handlePeriodChange(newPeriod: string) {
     setPeriod(newPeriod)
-    if (result) search(result.keyword, geo, newPeriod)
+    if (result) search(result.keyword, geo, newPeriod, engine)
+  }
+
+  function handleEngineChange(newEngine: string) {
+    setEngine(newEngine)
+    if (result) search(result.keyword, geo, period, newEngine)
   }
 
   function handleRelatedClick(keyword: string) {
     setInput(keyword)
-    search(keyword, geo, period)
+    search(keyword, geo, period, engine)
   }
 
   const geoName = GEO_LIST.find((g) => g.code === geo)?.name ?? 'Worldwide'
@@ -174,6 +180,20 @@ export default function TrendAnalysisPage() {
               ))}
             </select>
           </div>
+
+          {/* Engine selector */}
+          <select
+            value={engine}
+            onChange={(e) => handleEngineChange(e.target.value)}
+            className="px-3 py-2.5 text-sm bg-white border border-slate-200 rounded-xl
+                       text-slate-700 appearance-none cursor-pointer
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                       transition-shadow"
+          >
+            {ENGINE_OPTIONS.map((e) => (
+              <option key={e.value} value={e.value}>{e.label}</option>
+            ))}
+          </select>
 
           <button
             type="submit"

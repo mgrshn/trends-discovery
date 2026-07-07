@@ -19,6 +19,7 @@ export interface DashboardResult {
   total: number
   page: number
   per_page: number
+  mode: 'realtime' | 'longterm'
 }
 
 export interface Category {
@@ -29,12 +30,14 @@ export interface Category {
 export async function fetchDashboard(params: {
   category?: number
   geo?: string
+  mode?: 'realtime' | 'longterm'
   page?: number
   per_page?: number
 }): Promise<DashboardResult> {
   const p: Record<string, string> = {}
   if (params.category) p.category = String(params.category)
   if (params.geo) p.geo = params.geo
+  if (params.mode) p.mode = params.mode
   if (params.page) p.page = String(params.page)
   if (params.per_page) p.per_page = String(params.per_page)
   return apiFetch<DashboardResult>('/dashboard', p)

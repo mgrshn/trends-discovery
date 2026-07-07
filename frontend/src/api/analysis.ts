@@ -26,6 +26,7 @@ export interface AnalysisResult {
   keyword: string
   geo: string
   period: string
+  engine: string
   cached: boolean
   points: TrendPoint[]
   related_rising: RelatedQuery[]
@@ -37,6 +38,7 @@ export function fetchAnalysis(
   keyword: string,
   geo: string,
   period: string,
+  engine: string = 'web',
 ): Promise<AnalysisResult> {
-  return apiFetch<AnalysisResult>('/analysis', { keyword, geo, period })
+  return apiFetch<AnalysisResult>('/analysis', { keyword, geo, period, engine })
 }

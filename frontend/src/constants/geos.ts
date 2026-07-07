@@ -65,3 +65,19 @@ export const PERIOD_OPTIONS = [
   { label: '5 Years',  value: '5y'  },
   { label: 'All Time', value: 'all' },
 ]
+
+export const ENGINE_OPTIONS = [
+  { label: 'Web',      value: 'web'      },
+  { label: 'YouTube',  value: 'youtube'  },
+  { label: 'Images',   value: 'images'   },
+  { label: 'News',     value: 'news'     },
+  { label: 'Shopping', value: 'shopping' },
+]
+
+// Гео без Worldwide — для режима Real-time (Trending Now не поддерживает worldwide)
+export const GEO_LIST_COUNTRIES = GEO_LIST.filter((g) => g.code !== '')
+
+// Гео для инжеста trending-данных (должен совпадать с DashboardService::INGEST_GEOS)
+export const REALTIME_GEOS = GEO_LIST.filter((g) =>
+  ['US', 'GB', 'AU', 'CA', 'IN', 'DE', 'FR'].includes(g.code),
+)
