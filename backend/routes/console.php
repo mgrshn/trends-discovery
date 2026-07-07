@@ -3,6 +3,7 @@
 use App\Jobs\IngestTrendingJob;
 use App\Jobs\RelatedRisingIngestJob;
 use App\Jobs\ScoreTopicsJob;
+use App\Models\Setting;
 use App\Services\DashboardService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -12,12 +13,30 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Ingest trending for all configured geos every 30 minutes
+// Dynamic ingest — runs every minute, dispatches based on configured interval
 Schedule::call(function () {
-    foreach (DashboardService::ingestGeos() as $geo) {
-        IngestTrendingJob::dispatch($geo)->onQueue('default');
+    try {
+        $enabled  = Setting::getBool('auto_parse_enabled', true);
+        $interval = Setting::getInt('parse_interval_minutes', 30);
+        $lastRun  = Setting::get('ingest_last_dispatched_at');
+
+        if (!$enabled) {
+            return;
+        }
+
+        if ($lastRun && now()->diffInMinutes($lastRun) < $interval) {
+            return;
+        }
+
+        foreach (DashboardService::ingestGeos() as $geo) {
+            IngestTrendingJob::dispatch($geo)->onQueue('default');
+        }
+
+        Setting::set('ingest_last_dispatched_at', now()->toIso8601String());
+    } catch (\Throwable) {
+        // Settings table may not exist yet during migrations
     }
-})->everyThirtyMinutes()->name('ingest-trending');
+})->everyMinute()->name('ingest-trending-dynamic');
 
 // Score topics every hour — batch of 50 per run
 Schedule::job(new ScoreTopicsJob(50))->hourly()->name('score-topics');

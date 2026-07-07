@@ -17,7 +17,19 @@
 
 ## Открытые
 
-_(пусто)_
+## Управление прокси через API парсера
+- **Что нужно:** CRUD-эндпоинты для управления прокси-серверами, которые парсер использует при запросах к Google Trends
+- **Зачем:** в Filament-админке discovery нужен раздел управления прокси (добавить/удалить/вкл/выкл/проверить статус). Прокси реально применяются на стороне парсера — discovery только хранит и управляет ими через API, не имея прямого доступа к конфигу парсера
+- **Предлагаемый контракт:**
+  ```
+  GET    /proxies              → [{id, host, port, username, protocol, is_active, last_checked_at, last_status}]
+  POST   /proxies              body: {host, port, username?, password?, protocol}
+  PATCH  /proxies/{id}         body: {is_active?, host?, port?, ...}
+  DELETE /proxies/{id}
+  POST   /proxies/{id}/check   → {ok: bool, latency_ms: int, error?: string}
+  POST   /proxies/check-all    → [{id, ok, latency_ms}]
+  ```
+- **Приоритет:** желательно
 
 ## Отложено (решение владельца)
 

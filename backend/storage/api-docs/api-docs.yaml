@@ -1,0 +1,417 @@
+openapi: 3.0.3
+info:
+  title: Trends Discovery API
+  description: |
+    REST API for the Trends Discovery service.
+    All endpoints are prefixed with `/api/v1` unless noted otherwise.
+    No authentication required (internal service).
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local Docker
+
+tags:
+  - name: health
+    description: Service health
+  - name: dashboard
+    description: Dashboard data (real-time and long-term trends)
+  - name: analysis
+    description: On-demand trend analysis for any keyword
+  - name: catalog
+    description: Trends database — search and browse
+  - name: projects
+    description: Trend tracking — user projects and tracked topics
+
+paths:
+
+  /api/health:
+    get:
+      tags: [health]
+      summary: Service health check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  db:     { type: string, example: ok }
+                  redis:  { type: string, example: ok }
+
+  /api/v1/dashboard/trending:
+    get:
+      tags: [dashboard]
+      summary: Real-time trending topics for a country
+      description: |
+        Returns topics currently trending from Google Trends for the given geo.
+        Worldwide is not supported — `geo` is required.
+      parameters:
+        - in: query
+          name: geo
+          required: true
+          schema: { type: string, example: US }
+          description: ISO 3166-1 alpha-2 country code
+        - in: query
+          name: category
+          schema: { type: integer }
+          description: Filter by category ID
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: per_page
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Paginated list of trending topics
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TopicPage' }
+
+  /api/v1/dashboard/longterm:
+    get:
+      tags: [dashboard]
+      summary: Long-term scored trends
+      description: |
+        Returns topics from the local database that have been scored.
+        Sorted by status (exploding first) then score DESC.
+        Supports Worldwide (leave `geo` empty).
+      parameters:
+        - in: query
+          name: geo
+          schema: { type: string, example: '' }
+          description: ISO 3166-1 alpha-2 country code, or empty for Worldwide
+        - in: query
+          name: category
+          schema: { type: integer }
+        - in: query
+          name: status
+          schema: { type: string, enum: [exploding, regular, peaked] }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: per_page
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Paginated scored topics
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TopicPage' }
+
+  /api/v1/analysis/run:
+    post:
+      tags: [analysis]
+      summary: Start trend analysis for a keyword
+      description: |
+        Kicks off an async analysis job. Returns a `job_id` to poll.
+        The parser fetches trend data, related queries, and regional interest.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [keyword]
+              properties:
+                keyword:
+                  type: string
+                  example: electric vehicles
+                geo:
+                  type: string
+                  example: US
+                  default: ''
+                period:
+                  type: string
+                  example: 12m
+                  enum: [1m, 3m, 12m, 5y, all]
+                engine:
+                  type: string
+                  example: web
+                  enum: [web, youtube, images, news, shopping]
+      responses:
+        '202':
+          description: Job accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id: { type: string, example: abc-123 }
+                  status: { type: string, example: pending }
+
+  /api/v1/analysis/{jobId}:
+    get:
+      tags: [analysis]
+      summary: Poll analysis job status and result
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Job status (poll until status=done)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [pending, processing, done, error]
+                  result:
+                    type: object
+                    nullable: true
+                    properties:
+                      points:
+                        type: object
+                        additionalProperties: { type: integer }
+                        description: "timestamp_ms -> value (0-100)"
+                      related:
+                        type: object
+                        properties:
+                          top:    { type: array, items: { $ref: '#/components/schemas/RelatedQuery' } }
+                          rising: { type: array, items: { $ref: '#/components/schemas/RelatedQuery' } }
+                      regions:
+                        type: array
+                        items: { $ref: '#/components/schemas/Region' }
+
+  /api/v1/catalog:
+    get:
+      tags: [catalog]
+      summary: Search and filter the trends database
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+          description: Full-text search (ILIKE)
+        - in: query
+          name: category
+          schema: { type: string }
+          description: Category slug
+        - in: query
+          name: status
+          schema: { type: string, enum: [exploding, regular, peaked] }
+        - in: query
+          name: sort
+          schema: { type: string, enum: [growth, volume, newest], default: growth }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: per_page
+          schema: { type: integer, default: 24 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CatalogPage' }
+          description: Paginated catalog results
+
+  /api/v1/catalog/categories:
+    get:
+      tags: [catalog]
+      summary: List categories with topic counts
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CategoryStat' }
+          description: Category list
+
+  /api/v1/projects:
+    get:
+      tags: [projects]
+      summary: List all projects
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Project' }
+          description: Project list
+    post:
+      tags: [projects]
+      summary: Create a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, example: My Project }
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Project' }
+          description: Created project
+
+  /api/v1/projects/{id}:
+    delete:
+      tags: [projects]
+      summary: Delete a project
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Deleted
+
+  /api/v1/projects/{id}/topics:
+    get:
+      tags: [projects]
+      summary: List topics in a project
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ProjectTopic' }
+          description: Topic list
+    post:
+      tags: [projects]
+      summary: Add a topic to a project
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [topic_id]
+              properties:
+                topic_id: { type: integer }
+      responses:
+        '201':
+          description: Topic added
+
+  /api/v1/projects/{id}/topics/{topicId}:
+    delete:
+      tags: [projects]
+      summary: Remove a topic from a project
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+        - in: path
+          name: topicId
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Removed
+
+  /api/v1/projects/{id}/export:
+    get:
+      tags: [projects]
+      summary: Export project topics as CSV
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: CSV file
+          content:
+            text/csv:
+              schema:
+                type: string
+
+components:
+  schemas:
+
+    Topic:
+      type: object
+      properties:
+        id:            { type: integer }
+        keyword:       { type: string }
+        geo:           { type: string, example: US }
+        status:        { type: string, enum: [exploding, regular, peaked, noise], nullable: true }
+        score:         { type: number, nullable: true }
+        volume:        { type: integer, nullable: true }
+        volume_fmt:    { type: string, nullable: true, example: "1.2M" }
+        growth_pct:    { type: number, nullable: true }
+        growth_fmt:    { type: string, example: "+156%" }
+        growth_3m:     { type: number, nullable: true }
+        growth_6m:     { type: number, nullable: true }
+        growth_12m:    { type: number, nullable: true }
+        sparkline:     { type: array, items: { type: integer }, nullable: true }
+        category_id:   { type: integer, nullable: true }
+        category_name: { type: string, nullable: true }
+
+    TopicPage:
+      type: object
+      properties:
+        data:     { type: array, items: { $ref: '#/components/schemas/Topic' } }
+        total:    { type: integer }
+        page:     { type: integer }
+        per_page: { type: integer }
+        mode:     { type: string, enum: [realtime, longterm] }
+
+    CatalogPage:
+      type: object
+      properties:
+        data:     { type: array, items: { $ref: '#/components/schemas/Topic' } }
+        total:    { type: integer }
+        page:     { type: integer }
+        per_page: { type: integer }
+
+    CategoryStat:
+      type: object
+      properties:
+        id:    { type: integer }
+        name:  { type: string }
+        slug:  { type: string }
+        count: { type: integer }
+
+    RelatedQuery:
+      type: object
+      properties:
+        query: { type: string }
+        value: { type: string, description: "e.g. +350% or Breakout" }
+
+    Region:
+      type: object
+      properties:
+        name:  { type: string }
+        value: { type: integer, description: "Interest 0-100" }
+
+    Project:
+      type: object
+      properties:
+        id:          { type: integer }
+        name:        { type: string }
+        topic_count: { type: integer }
+        created_at:  { type: string, format: date-time }
+
+    ProjectTopic:
+      allOf:
+        - $ref: '#/components/schemas/Topic'
+        - type: object
+          properties:
+            added_at: { type: string, format: date-time }

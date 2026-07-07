@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import TrendCard from '../components/TrendCard'
 import type { TrendTopic, Category } from '../api/dashboard'
 import { fetchDashboard, fetchCategories } from '../api/dashboard'
-import { REALTIME_GEOS } from '../constants/geos'
+import { GEO_LIST, GEO_LIST_COUNTRIES } from '../constants/geos'
 
 type Mode = 'realtime' | 'longterm'
 
@@ -12,8 +12,8 @@ export default function DashboardPage() {
   const [topics, setTopics] = useState<TrendTopic[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
-  const [mode, setMode] = useState<Mode>('realtime')
-  const [geo, setGeo] = useState<string>('US')
+  const [mode, setMode] = useState<Mode>('longterm')
+  const [geo, setGeo] = useState<string>('')
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -59,6 +59,9 @@ export default function DashboardPage() {
     setMode(m)
     setPage(1)
     setSelectedCategory(null)
+    // Realtime doesn't support Worldwide — reset to US when switching
+    if (m === 'realtime' && geo === '') setGeo('US')
+    if (m === 'longterm' && geo !== '') setGeo('')
   }
 
   function selectGeo(g: string) {
@@ -101,22 +104,20 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Geo selector (Real-time only — Trending Now doesn't support Worldwide) */}
-      {mode === 'realtime' && (
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-sm text-gray-500 shrink-0">Country:</span>
-          <select
-            value={geo}
-            onChange={(e) => selectGeo(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700
-                       focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
-          >
-            {REALTIME_GEOS.map((g) => (
-              <option key={g.code} value={g.code}>{g.name}</option>
-            ))}
-          </select>
-        </div>
-      )}
+      {/* Geo selector — longterm supports Worldwide, realtime does not */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-sm text-gray-500 shrink-0">Country:</span>
+        <select
+          value={geo}
+          onChange={(e) => selectGeo(e.target.value)}
+          className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700
+                     focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+        >
+          {(mode === 'longterm' ? GEO_LIST : GEO_LIST_COUNTRIES).map((g) => (
+            <option key={g.code} value={g.code}>{g.name}</option>
+          ))}
+        </select>
+      </div>
 
       {/* Category filter pills */}
       <div className="flex flex-wrap gap-2 mb-6">

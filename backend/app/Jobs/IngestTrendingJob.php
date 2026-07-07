@@ -78,6 +78,10 @@ class IngestTrendingJob implements ShouldQueue
 
         // Queue sparkline fetch for this geo (limit 20 per geo — 51 geos total)
         SparklineFetchJob::dispatch($this->geo, 20)->onQueue('default');
+
+        // Immediately queue scoring for unscored topics from this geo
+        // so trend data is ready before the hourly ScoreTopicsJob runs
+        ScoreTopicsJob::dispatch(20)->onQueue('default');
     }
 
     private function buildCategoryMap(): array

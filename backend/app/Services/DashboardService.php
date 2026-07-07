@@ -27,7 +27,7 @@ class DashboardService
         int $page = 1,
     ): array {
         if ($mode === 'longterm') {
-            return $this->getLongtermTopics($categoryId, $perPage, $page);
+            return $this->getLongtermTopics($categoryId, $geo, $perPage, $page);
         }
 
         $query = DB::table('topics as t')
@@ -63,7 +63,7 @@ class DashboardService
         ];
     }
 
-    private function getLongtermTopics(?int $categoryId, int $perPage, int $page): array
+    private function getLongtermTopics(?int $categoryId, string $geo, int $perPage, int $page): array
     {
         $query = DB::table('topics as t')
             ->leftJoin('categories as c', 'c.id', '=', 't.category_id')
@@ -79,6 +79,10 @@ class DashboardService
 
         if ($categoryId !== null) {
             $query->where('t.category_id', $categoryId);
+        }
+
+        if ($geo !== '') {
+            $query->where('t.geo', $geo);
         }
 
         $query->orderByRaw("
