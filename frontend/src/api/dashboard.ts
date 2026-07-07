@@ -1,5 +1,7 @@
 import { apiFetch } from './index'
 
+export type TopicStatus = 'exploding' | 'regular' | 'peaked' | 'noise' | null
+
 export interface TrendTopic {
   id: number
   keyword: string
@@ -8,8 +10,12 @@ export interface TrendTopic {
   volume_fmt: string | null
   growth_pct: string | null
   growth_fmt: string | null
+  growth_3m: number | null
+  growth_6m: number | null
+  growth_12m: number | null
   sparkline: number[] | null
-  status: string | null
+  status: TopicStatus
+  score: number | null
   category_id: number | null
   category_name: string | null
 }

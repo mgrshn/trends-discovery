@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\IngestTrendingJob;
+use App\Jobs\ScoreTopicsJob;
 use App\Services\DashboardService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -16,3 +17,6 @@ Schedule::call(function () {
         IngestTrendingJob::dispatch($geo)->onQueue('default');
     }
 })->everyThirtyMinutes()->name('ingest-trending');
+
+// Score topics every hour — batch of 50 per run
+Schedule::job(new ScoreTopicsJob(50))->hourly()->name('score-topics');

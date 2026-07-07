@@ -27,8 +27,7 @@ class DashboardService
         int $page = 1,
     ): array {
         if ($mode === 'longterm') {
-            // Этап 3 (скоринг) ещё не реализован — возвращаем пустой placeholder
-            return ['data' => [], 'total' => 0, 'page' => $page, 'per_page' => $perPage, 'mode' => 'longterm'];
+            return $this->getLongtermTopics($categoryId, $perPage, $page);
         }
 
         $query = DB::table('topics as t')
@@ -37,7 +36,8 @@ class DashboardService
             ->where(fn($q) => $q->whereNull('t.approved')->orWhere('t.approved', true))
             ->select([
                 't.id', 't.keyword', 't.geo',
-                't.volume', 't.growth_pct', 't.sparkline', 't.status',
+                't.volume', 't.growth_pct', 't.growth_3m', 't.growth_6m', 't.growth_12m',
+                't.sparkline', 't.status', 't.score',
                 'c.id as category_id', 'c.name as category_name',
             ]);
 
@@ -63,6 +63,47 @@ class DashboardService
         ];
     }
 
+    private function getLongtermTopics(?int $categoryId, int $perPage, int $page): array
+    {
+        $query = DB::table('topics as t')
+            ->leftJoin('categories as c', 'c.id', '=', 't.category_id')
+            ->whereNotNull('t.last_scored_at')
+            ->where('t.status', '!=', 'noise')
+            ->where(fn($q) => $q->whereNull('t.approved')->orWhere('t.approved', true))
+            ->select([
+                't.id', 't.keyword', 't.geo',
+                't.volume', 't.growth_pct', 't.growth_3m', 't.growth_6m', 't.growth_12m',
+                't.sparkline', 't.status', 't.score',
+                'c.id as category_id', 'c.name as category_name',
+            ]);
+
+        if ($categoryId !== null) {
+            $query->where('t.category_id', $categoryId);
+        }
+
+        $query->orderByRaw("
+            CASE t.status
+                WHEN 'exploding' THEN 1
+                WHEN 'regular'   THEN 2
+                WHEN 'peaked'    THEN 3
+                ELSE 4
+            END,
+            t.score DESC NULLS LAST,
+            t.volume DESC NULLS LAST
+        ");
+
+        $total = (clone $query)->count();
+        $items = $query->offset(($page - 1) * $perPage)->limit($perPage)->get();
+
+        return [
+            'data'     => $items->map(fn($r) => $this->formatTopic($r))->values()->all(),
+            'total'    => $total,
+            'page'     => $page,
+            'per_page' => $perPage,
+            'mode'     => 'longterm',
+        ];
+    }
+
     public function getCategories(): array
     {
         return DB::table('categories')
@@ -77,6 +118,15 @@ class DashboardService
     {
         $sparkline = $r->sparkline ? json_decode($r->sparkline, true) : null;
 
+        // For longterm cards, prefer scored growth_12m over raw growth_pct
+        $displayGrowth = property_exists($r, 'growth_12m') && $r->growth_12m !== null
+            ? (float) $r->growth_12m
+            : (float) ($r->growth_pct ?? 0);
+
+        $growthFmt = $displayGrowth >= 0
+            ? '+' . number_format($displayGrowth) . '%'
+            : number_format($displayGrowth) . '%';
+
         return [
             'id'            => $r->id,
             'keyword'       => $r->keyword,
@@ -84,11 +134,13 @@ class DashboardService
             'volume'        => $r->volume,
             'volume_fmt'    => $this->formatVolume($r->volume),
             'growth_pct'    => $r->growth_pct,
-            'growth_fmt'    => $r->growth_pct !== null
-                ? '+' . number_format((float)$r->growth_pct) . '%'
-                : null,
+            'growth_fmt'    => $growthFmt,
+            'growth_3m'     => property_exists($r, 'growth_3m')  ? $r->growth_3m  : null,
+            'growth_6m'     => property_exists($r, 'growth_6m')  ? $r->growth_6m  : null,
+            'growth_12m'    => property_exists($r, 'growth_12m') ? $r->growth_12m : null,
             'sparkline'     => $sparkline,
             'status'        => $r->status,
+            'score'         => property_exists($r, 'score') ? $r->score : null,
             'category_id'   => $r->category_id,
             'category_name' => $r->category_name,
         ];

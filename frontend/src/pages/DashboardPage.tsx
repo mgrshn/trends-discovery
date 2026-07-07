@@ -173,9 +173,9 @@ export default function DashboardPage() {
           </div>
           {mode === 'longterm' ? (
             <>
-              <p className="text-gray-600 text-sm font-medium">Long-term trends coming soon</p>
+              <p className="text-gray-600 text-sm font-medium">No scored trends yet</p>
               <p className="text-gray-400 text-xs mt-1 max-w-xs">
-                Long-term view will show scored trends after the scoring pipeline is built (Stage 3).
+                Scoring runs hourly. Topics need a 12-month series to be evaluated.
               </p>
             </>
           ) : (
