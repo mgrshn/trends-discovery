@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnalysisController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HealthController;
 
@@ -23,7 +24,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/dashboard/categories', [DashboardController::class, 'categories']);
 
     // Этап 4: Catalog
-    // Route::get('/catalog', [CatalogController::class, 'index']);
+    Route::get('/catalog', [CatalogController::class, 'index']);
+    Route::get('/catalog/categories', [CatalogController::class, 'categories']);
 
     // Этап 5: Projects
     // Route::apiResource('/projects', ProjectController::class);

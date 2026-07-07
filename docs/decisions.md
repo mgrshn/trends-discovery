@@ -12,6 +12,15 @@ _(нет открытых — оба вопроса от 2026-07-07 закрыт
 
 ---
 
+- **2026-07-08** · **Каталог: сортировка по COALESCE(growth_12m, growth_pct)** ·
+  Для проскоренных топиков growth_12m точнее raw growth_pct (из trending API). В сортировке
+  каталога и дашборда используем COALESCE чтобы не терять данные непроскоренных топиков.
+
+- **2026-07-08** · **RelatedRisingIngestJob: insert-or-skip, не upsert** ·
+  Unique constraint на topics — только (keyword, geo), без source. Upsert по (keyword, geo, source)
+  вызывал silent fail. Решение: проверяем EXISTS и вставляем только новые keyword+geo; у существующих
+  обновляем growth_pct только если source=related_rising.
+
 - **2026-07-08** · **Расписание — у discovery; парсер чисто on-demand** (решение владельца) ·
   Парсер НЕ держит свой cron опроса Trending Now — он парсит только по запросу. Всё расписание живёт
   в discovery: scheduled-ингест (Laravel Scheduler) опрашивает `GET /trending` у парсера не реже
