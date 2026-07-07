@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SparklineChart from './SparklineChart'
 import type { TrendTopic, TopicStatus } from '../api/dashboard'
+import { useTracking } from '../context/TrackingContext'
 
 interface Props {
   topic: TrendTopic
@@ -29,9 +31,21 @@ function StatusBadge({ status }: { status: TopicStatus }) {
 
 export default function TrendCard({ topic }: Props) {
   const navigate = useNavigate()
+  const { trackTopic } = useTracking()
+  const [tracking, setTracking] = useState(false)
+  const [tracked, setTracked]   = useState(false)
 
   function handleAnalyze() {
     navigate(`/analysis?keyword=${encodeURIComponent(topic.keyword)}&geo=${topic.geo}`)
+  }
+
+  async function handleTrack(e: React.MouseEvent) {
+    e.stopPropagation()
+    if (tracking || tracked) return
+    setTracking(true)
+    await trackTopic(topic.id).catch(() => {})
+    setTracking(false)
+    setTracked(true)
   }
 
   const growthColor = topic.growth_fmt?.startsWith('-')
@@ -82,10 +96,14 @@ export default function TrendCard({ topic }: Props) {
         </div>
 
         <button
-          onClick={handleAnalyze}
-          className="text-xs font-semibold text-indigo-600 border border-indigo-200 rounded-lg px-3 py-1.5 hover:bg-indigo-50 transition-colors whitespace-nowrap"
+          onClick={handleTrack}
+          className={`text-xs font-semibold border rounded-lg px-3 py-1.5 transition-colors whitespace-nowrap ${
+            tracked
+              ? 'text-emerald-600 border-emerald-200 bg-emerald-50'
+              : 'text-indigo-600 border-indigo-200 hover:bg-indigo-50'
+          }`}
         >
-          + TRACK TOPIC
+          {tracked ? '✓ TRACKED' : tracking ? '…' : '+ TRACK TOPIC'}
         </button>
       </div>
     </div>

@@ -4,6 +4,7 @@ import SparklineChart from '../components/SparklineChart'
 import type { CatalogSort, CatalogTopic, CategoryStat } from '../api/catalog'
 import { fetchCatalog, fetchCatalogCategories } from '../api/catalog'
 import type { TopicStatus } from '../api/dashboard'
+import { useTracking } from '../context/TrackingContext'
 
 const PER_PAGE = 24
 
@@ -28,9 +29,21 @@ const STATUS_BADGE: Record<string, string> = {
 
 function CatalogCard({ topic }: { topic: CatalogTopic }) {
   const navigate = useNavigate()
+  const { trackTopic } = useTracking()
+  const [tracking, setTracking] = useState(false)
+  const [tracked, setTracked]   = useState(false)
 
   function goAnalyze() {
     navigate(`/analysis?keyword=${encodeURIComponent(topic.keyword)}&geo=${topic.geo}`)
+  }
+
+  async function handleTrack(e: React.MouseEvent) {
+    e.stopPropagation()
+    if (tracking || tracked) return
+    setTracking(true)
+    await trackTopic(topic.id).catch(() => {})
+    setTracking(false)
+    setTracked(true)
   }
 
   const growthColor = topic.growth_fmt?.startsWith('-') ? 'text-red-500' : 'text-emerald-600'
@@ -69,9 +82,16 @@ function CatalogCard({ topic }: { topic: CatalogTopic }) {
             </div>
           )}
         </div>
-        {topic.category_name && (
-          <span className="text-xs text-gray-400 truncate max-w-[80px]">{topic.category_name}</span>
-        )}
+        <button
+          onClick={handleTrack}
+          className={`shrink-0 text-xs font-semibold border rounded-lg px-2 py-1 transition-colors ${
+            tracked
+              ? 'text-emerald-600 border-emerald-200 bg-emerald-50'
+              : 'text-indigo-600 border-indigo-200 hover:bg-indigo-50'
+          }`}
+        >
+          {tracked ? '✓' : tracking ? '…' : '+'}
+        </button>
       </div>
     </div>
   )

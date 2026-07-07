@@ -1,6 +1,8 @@
 // All requests go through Vite proxy → backend.
 // No base URL needed: proxy rewrites /api/* → backend:8000/api/*
 
+export const BASE = '/api/v1'
+
 export async function apiFetch<T>(path: string, params?: Record<string, string>): Promise<T> {
   const url = new URL(`/api/v1${path}`, window.location.origin)
   if (params) {

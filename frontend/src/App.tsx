@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { TrackingProvider } from './context/TrackingContext'
 import Layout from './components/Layout'
 import DashboardPage from './pages/DashboardPage'
 import TrendAnalysisPage from './pages/TrendAnalysisPage'
@@ -8,6 +9,7 @@ import TrendTrackingPage from './pages/TrendTrackingPage'
 export default function App() {
   return (
     <BrowserRouter>
+    <TrackingProvider>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
@@ -17,6 +19,7 @@ export default function App() {
           <Route path="tracking" element={<TrendTrackingPage />} />
         </Route>
       </Routes>
+    </TrackingProvider>
     </BrowserRouter>
   )
 }
