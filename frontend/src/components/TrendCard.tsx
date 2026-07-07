@@ -29,6 +29,27 @@ function StatusBadge({ status }: { status: TopicStatus }) {
   )
 }
 
+function fmtAgo(iso: string | null): string | null {
+  if (!iso) return null
+  const d = new Date(iso)
+  const diff = Math.floor((Date.now() - d.getTime()) / 1000)
+  if (diff < 60)   return 'just now'
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  return `${Math.floor(diff / 86400)}d ago`
+}
+
+function UpdatedAt({ topic }: { topic: TrendTopic }) {
+  const ts = topic.last_scored_at ?? topic.updated_at
+  const label = fmtAgo(ts)
+  if (!label) return null
+  return (
+    <div className="text-xs text-gray-400 text-right -mt-1">
+      updated {label}
+    </div>
+  )
+}
+
 export default function TrendCard({ topic }: Props) {
   const navigate = useNavigate()
   const { trackTopic } = useTracking()
@@ -106,6 +127,8 @@ export default function TrendCard({ topic }: Props) {
           {tracked ? '✓ TRACKED' : tracking ? '…' : '+ TRACK TOPIC'}
         </button>
       </div>
+
+      <UpdatedAt topic={topic} />
     </div>
   )
 }

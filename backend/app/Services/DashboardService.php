@@ -39,7 +39,7 @@ class DashboardService
             ->select([
                 't.id', 't.keyword', 't.geo',
                 't.volume', 't.growth_pct', 't.growth_3m', 't.growth_6m', 't.growth_12m',
-                't.sparkline', 't.status', 't.score',
+                't.sparkline', 't.status', 't.score', 't.updated_at',
                 'c.id as category_id', 'c.name as category_name',
             ]);
 
@@ -86,7 +86,7 @@ class DashboardService
             ->select([
                 't.id', 't.keyword', 't.geo',
                 't.volume', 't.growth_pct', 't.growth_3m', 't.growth_6m', 't.growth_12m',
-                't.sparkline', 't.status', 't.score',
+                't.sparkline', 't.status', 't.score', 't.last_scored_at', 't.updated_at',
                 'c.id as category_id', 'c.name as category_name',
             ]);
 
@@ -165,6 +165,8 @@ class DashboardService
             'score'         => property_exists($r, 'score') ? $r->score : null,
             'category_id'   => $r->category_id,
             'category_name' => $r->category_name,
+            'updated_at'    => property_exists($r, 'updated_at')    ? $r->updated_at    : null,
+            'last_scored_at' => property_exists($r, 'last_scored_at') ? $r->last_scored_at : null,
         ];
     }
 

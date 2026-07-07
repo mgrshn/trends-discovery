@@ -18,6 +18,8 @@ export interface TrendTopic {
   score: number | null
   category_id: number | null
   category_name: string | null
+  updated_at: string | null
+  last_scored_at: string | null
 }
 
 export interface DashboardResult {

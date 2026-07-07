@@ -1,77 +1,33 @@
 <x-filament-panels::page>
-    <div class="space-y-6">
+    <x-filament::section>
+        <x-slot name="heading">Auto-parsing schedule</x-slot>
+        {{ $this->form }}
+    </x-filament::section>
 
-        {{-- Auto-parse settings --}}
-        <x-filament::section>
-            <x-slot name="heading">Auto-parsing</x-slot>
-            <x-slot name="description">Control the automatic trending topics ingestion schedule.</x-slot>
+    <x-filament::section class="mt-6">
+        <x-slot name="heading">Parse now</x-slot>
+        <x-slot name="description">Dispatch a one-time ingest for selected countries. Leave empty to run all 51 geos.</x-slot>
 
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">Enable auto-parsing</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Automatically fetch trending topics on a schedule</p>
-                    </div>
-                    <x-filament::input.wrapper>
-                        <input
-                            type="checkbox"
-                            wire:model.live="auto_parse_enabled"
-                            class="rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-600"
-                        >
-                    </x-filament::input.wrapper>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1">
-                        Parse interval (minutes)
-                    </label>
-                    <select
-                        wire:model="parse_interval_minutes"
-                        class="block w-48 rounded-lg border-gray-300 text-sm shadow-sm focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    >
-                        @foreach ([5, 10, 15, 30, 45, 60] as $m)
-                            <option value="{{ $m }}">Every {{ $m }} min</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <x-filament::button wire:click="save" color="primary">
-                        Save settings
-                    </x-filament::button>
-                </div>
+        <div class="space-y-4">
+            <div>
+                <label class="fi-fo-field-wrp-label inline-flex items-center gap-x-3 text-sm font-medium leading-6 text-gray-950 dark:text-white">
+                    Select geos
+                </label>
+                <select
+                    wire:model="manual_geos"
+                    multiple
+                    class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white h-48"
+                >
+                    @foreach (App\Filament\Pages\ParserSettings::getGeoOptions() as $code => $label)
+                        <option value="{{ $code }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+                <p class="mt-1 text-xs text-gray-500">Hold Cmd/Ctrl to select multiple</p>
             </div>
-        </x-filament::section>
 
-        {{-- Manual parse --}}
-        <x-filament::section>
-            <x-slot name="heading">Parse Now</x-slot>
-            <x-slot name="description">Dispatch a one-time ingest job for selected countries (empty = all 51 geos).</x-slot>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1">
-                        Select geos (leave empty for all)
-                    </label>
-                    <select
-                        wire:model="manual_geos"
-                        multiple
-                        class="block w-full h-48 rounded-lg border-gray-300 text-sm shadow-sm focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    >
-                        @foreach (App\Filament\Pages\ParserSettings::getGeoOptions() as $code => $label)
-                            <option value="{{ $code }}">{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    <p class="text-xs text-gray-400 mt-1">Hold Cmd/Ctrl to select multiple</p>
-                </div>
-
-                <div>
-                    <x-filament::button wire:click="parseNow" color="success">
-                        Parse now
-                    </x-filament::button>
-                </div>
-            </div>
-        </x-filament::section>
-
-    </div>
+            <x-filament::button wire:click="parseNow" color="success">
+                Parse now
+            </x-filament::button>
+        </div>
+    </x-filament::section>
 </x-filament-panels::page>
