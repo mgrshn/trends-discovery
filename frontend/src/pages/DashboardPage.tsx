@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import TrendCard from '../components/TrendCard'
-import type { TrendTopic, Category } from '../api/dashboard'
+import type { TrendTopic, Category, DashboardSort } from '../api/dashboard'
 import { fetchDashboard, fetchCategories } from '../api/dashboard'
 import { GEO_LIST, GEO_LIST_COUNTRIES } from '../constants/geos'
 
@@ -14,6 +14,8 @@ export default function DashboardPage() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
   const [mode, setMode] = useState<Mode>('longterm')
   const [geo, setGeo] = useState<string>('')
+  const [sort, setSort] = useState<DashboardSort>('score')
+  const [activeOnly, setActiveOnly] = useState(false)
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -24,7 +26,7 @@ export default function DashboardPage() {
   }, [])
 
   const load = useCallback(
-    async (cat: number | null, pg: number, m: Mode, g: string) => {
+    async (cat: number | null, pg: number, m: Mode, g: string, s: DashboardSort, ao: boolean) => {
       setLoading(true)
       setError(null)
       try {
@@ -32,6 +34,8 @@ export default function DashboardPage() {
           category: cat ?? undefined,
           geo: g || undefined,
           mode: m,
+          sort: s,
+          active_only: ao || undefined,
           page: pg,
           per_page: PER_PAGE,
         })
@@ -47,8 +51,8 @@ export default function DashboardPage() {
   )
 
   useEffect(() => {
-    load(selectedCategory, page, mode, geo)
-  }, [selectedCategory, page, mode, geo, load])
+    load(selectedCategory, page, mode, geo, sort, activeOnly)
+  }, [selectedCategory, page, mode, geo, sort, activeOnly, load])
 
   function selectCategory(id: number | null) {
     setSelectedCategory(id)
@@ -59,6 +63,8 @@ export default function DashboardPage() {
     setMode(m)
     setPage(1)
     setSelectedCategory(null)
+    setSort('score')
+    setActiveOnly(false)
     // Realtime doesn't support Worldwide — reset to US when switching
     if (m === 'realtime' && geo === '') setGeo('US')
     if (m === 'longterm' && geo !== '') setGeo('')
@@ -82,16 +88,6 @@ export default function DashboardPage() {
         {/* Mode toggle */}
         <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
           <button
-            onClick={() => selectMode('realtime')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              mode === 'realtime'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            Real-time
-          </button>
-          <button
             onClick={() => selectMode('longterm')}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               mode === 'longterm'
@@ -101,22 +97,62 @@ export default function DashboardPage() {
           >
             Long-term
           </button>
+          <button
+            onClick={() => selectMode('realtime')}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              mode === 'realtime'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Real-time
+          </button>
         </div>
       </div>
 
-      {/* Geo selector — longterm supports Worldwide, realtime does not */}
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-sm text-gray-500 shrink-0">Country:</span>
-        <select
-          value={geo}
-          onChange={(e) => selectGeo(e.target.value)}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700
-                     focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+      {/* Filters row */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500 shrink-0">Country:</span>
+          <select
+            value={geo}
+            onChange={(e) => selectGeo(e.target.value)}
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+          >
+            {(mode === 'longterm' ? GEO_LIST : GEO_LIST_COUNTRIES).map((g) => (
+              <option key={g.code} value={g.code}>{g.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500 shrink-0">Sort:</span>
+          <select
+            value={sort}
+            onChange={(e) => { setSort(e.target.value as DashboardSort); setPage(1) }}
+            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+          >
+            <option value="score">Relevance</option>
+            <option value="volume">Search Volume</option>
+            <option value="growth">Growth</option>
+            <option value="recency">Recency</option>
+            <option value="title">Title</option>
+          </select>
+        </div>
+
+        <button
+          onClick={() => { setActiveOnly(!activeOnly); setPage(1) }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+            activeOnly
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+              : 'bg-white border-gray-200 text-gray-500 hover:text-gray-700'
+          }`}
         >
-          {(mode === 'longterm' ? GEO_LIST : GEO_LIST_COUNTRIES).map((g) => (
-            <option key={g.code} value={g.code}>{g.name}</option>
-          ))}
-        </select>
+          <span className={`w-2 h-2 rounded-full ${activeOnly ? 'bg-emerald-500' : 'bg-gray-300'}`} />
+          Active only
+        </button>
       </div>
 
       {/* Category filter pills */}

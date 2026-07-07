@@ -33,10 +33,14 @@ export interface Category {
   name: string
 }
 
+export type DashboardSort = 'score' | 'volume' | 'growth' | 'recency' | 'title'
+
 export async function fetchDashboard(params: {
   category?: number
   geo?: string
   mode?: 'realtime' | 'longterm'
+  sort?: DashboardSort
+  active_only?: boolean
   page?: number
   per_page?: number
 }): Promise<DashboardResult> {
@@ -44,6 +48,8 @@ export async function fetchDashboard(params: {
   if (params.category) p.category = String(params.category)
   if (params.geo) p.geo = params.geo
   if (params.mode) p.mode = params.mode
+  if (params.sort) p.sort = params.sort
+  if (params.active_only) p.active_only = '1'
   if (params.page) p.page = String(params.page)
   if (params.per_page) p.per_page = String(params.per_page)
   return apiFetch<DashboardResult>('/dashboard', p)

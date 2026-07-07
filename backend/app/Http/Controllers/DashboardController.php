@@ -13,17 +13,21 @@ class DashboardController extends Controller
     public function index(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'category' => ['nullable', 'integer', 'min:1'],
-            'geo'      => ['nullable', 'string', 'max:10'],
-            'mode'     => ['nullable', 'in:realtime,longterm'],
-            'page'     => ['nullable', 'integer', 'min:1'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'category'    => ['nullable', 'integer', 'min:1'],
+            'geo'         => ['nullable', 'string', 'max:10'],
+            'mode'        => ['nullable', 'in:realtime,longterm'],
+            'sort'        => ['nullable', 'in:score,volume,growth,recency,title'],
+            'active_only' => ['nullable', 'boolean'],
+            'page'        => ['nullable', 'integer', 'min:1'],
+            'per_page'    => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
         $result = $this->service->getTopics(
             categoryId: isset($validated['category']) ? (int)$validated['category'] : null,
             geo:        $validated['geo'] ?? '',
             mode:       $validated['mode'] ?? 'realtime',
+            sort:       $validated['sort'] ?? 'score',
+            activeOnly: filter_var($validated['active_only'] ?? false, FILTER_VALIDATE_BOOLEAN),
             perPage:    (int)($validated['per_page'] ?? 20),
             page:       (int)($validated['page'] ?? 1),
         );

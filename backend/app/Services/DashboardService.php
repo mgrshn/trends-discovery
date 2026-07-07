@@ -23,11 +23,13 @@ class DashboardService
         ?int $categoryId = null,
         string $geo = '',
         string $mode = 'realtime',
+        string $sort = 'score',
+        bool $activeOnly = false,
         int $perPage = 20,
         int $page = 1,
     ): array {
         if ($mode === 'longterm') {
-            return $this->getLongtermTopics($categoryId, $geo, $perPage, $page);
+            return $this->getLongtermTopics($categoryId, $geo, $sort, $activeOnly, $perPage, $page);
         }
 
         $query = DB::table('topics as t')
@@ -49,7 +51,18 @@ class DashboardService
             $query->where('t.geo', $geo);
         }
 
-        $query->orderByRaw('t.growth_pct DESC NULLS LAST, t.volume DESC NULLS LAST');
+        if ($activeOnly) {
+            // Real-time "active" = seen within last 48 hours
+            $query->where('t.updated_at', '>=', now()->subHours(48));
+        }
+
+        $query->orderByRaw(match($sort) {
+            'volume'  => 't.volume DESC NULLS LAST, t.growth_pct DESC NULLS LAST',
+            'growth'  => 't.growth_pct DESC NULLS LAST, t.volume DESC NULLS LAST',
+            'recency' => 't.discovered_at DESC, t.growth_pct DESC NULLS LAST',
+            'title'   => 't.keyword ASC',
+            default   => 't.growth_pct DESC NULLS LAST, t.volume DESC NULLS LAST',
+        });
 
         $total = (clone $query)->count();
         $items = $query->offset(($page - 1) * $perPage)->limit($perPage)->get();
@@ -63,7 +76,7 @@ class DashboardService
         ];
     }
 
-    private function getLongtermTopics(?int $categoryId, string $geo, int $perPage, int $page): array
+    private function getLongtermTopics(?int $categoryId, string $geo, string $sort, bool $activeOnly, int $perPage, int $page): array
     {
         $query = DB::table('topics as t')
             ->leftJoin('categories as c', 'c.id', '=', 't.category_id')
@@ -85,16 +98,21 @@ class DashboardService
             $query->where('t.geo', $geo);
         }
 
-        $query->orderByRaw("
-            CASE t.status
-                WHEN 'exploding' THEN 1
-                WHEN 'regular'   THEN 2
-                WHEN 'peaked'    THEN 3
-                ELSE 4
-            END,
-            t.score DESC NULLS LAST,
-            t.volume DESC NULLS LAST
-        ");
+        // "Active" in long-term = only exploding or regular (not peaked)
+        if ($activeOnly) {
+            $query->whereIn('t.status', ['exploding', 'regular']);
+        }
+
+        $orderBy = match($sort) {
+            'volume'  => 't.volume DESC NULLS LAST, t.score DESC NULLS LAST',
+            'growth'  => 'COALESCE(t.growth_12m, t.growth_pct) DESC NULLS LAST',
+            'recency' => 't.last_scored_at DESC, t.score DESC NULLS LAST',
+            'title'   => 't.keyword ASC',
+            // Default: status priority + score
+            default   => "CASE t.status WHEN 'exploding' THEN 1 WHEN 'regular' THEN 2 WHEN 'peaked' THEN 3 ELSE 4 END, t.score DESC NULLS LAST, t.volume DESC NULLS LAST",
+        };
+
+        $query->orderByRaw($orderBy);
 
         $total = (clone $query)->count();
         $items = $query->offset(($page - 1) * $perPage)->limit($perPage)->get();
