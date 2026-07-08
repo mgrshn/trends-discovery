@@ -29,9 +29,23 @@ class AnalysisService
 
     private function fetchAll(string $keyword, string $geo, string $period, string $engine = 'web'): array
     {
-        $trends  = $this->tryFetch(fn () => $this->parser->trends($keyword, $geo, $period, $engine));
-        $related = $this->tryFetch(fn () => $this->parser->related($keyword, $geo, $period));
-        $regions = $this->tryFetch(fn () => $this->parser->regions($keyword, $geo, $period));
+        // Trends may need polling (202 while parser collects data from Google)
+        $trends = $this->tryFetch(fn () => $this->parser->trends($keyword, $geo, $period, $engine));
+
+        // Once trends are ready the underlying data is warm — fetch related+regions in parallel
+        $baseUrl = rtrim(config('services.parser.url'), '/');
+        $headers = array_filter(['X-API-Key' => config('services.parser.api_key')]);
+        $params  = array_filter(['keyword' => $keyword, 'geo' => $geo, 'period' => $period]);
+
+        $pool = Http::pool(fn ($p) => [
+            $p->as('related')->withHeaders($headers)->acceptJson()
+                ->get($baseUrl . '/trends/related', $params),
+            $p->as('regions')->withHeaders($headers)->acceptJson()
+                ->get($baseUrl . '/trends/regions', $params),
+        ]);
+
+        $related = ($pool['related']->successful()) ? $pool['related']->json() : [];
+        $regions = ($pool['regions']->successful()) ? $pool['regions']->json() : [];
 
         return [$trends, $related, $regions];
     }
