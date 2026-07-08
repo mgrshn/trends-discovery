@@ -1,5 +1,5 @@
 v893379.hosted-by-vdsina.com {
-    # Laravel backend — API, admin, очереди, Livewire
+    # Laravel backend — API, admin, очереди, Livewire, Filament assets
     handle /api/* {
         reverse_proxy backend:8000
     }
@@ -13,6 +13,15 @@ v893379.hosted-by-vdsina.com {
         reverse_proxy backend:8000
     }
     handle /sanctum* {
+        reverse_proxy backend:8000
+    }
+    handle /css/filament/* {
+        reverse_proxy backend:8000
+    }
+    handle /js/filament/* {
+        reverse_proxy backend:8000
+    }
+    handle /fonts/filament/* {
         reverse_proxy backend:8000
     }
 
