@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
-    private const INGEST_GEOS = [
+    public const DEFAULT_GEOS = [
         'US', 'GB', 'CA', 'AU', 'DE', 'FR', 'IN', 'BR', 'MX', 'JP',
         'KR', 'SG', 'NL', 'SE', 'NO', 'ES', 'IT', 'PL', 'RU', 'UA',
         'ZA', 'NG', 'EG', 'AR', 'CL', 'CO', 'ID', 'PH', 'TH', 'VN',
@@ -16,7 +16,14 @@ class DashboardService
 
     public static function ingestGeos(): array
     {
-        return self::INGEST_GEOS;
+        $saved = \App\Models\Setting::get('ingest_geos');
+        if ($saved) {
+            $decoded = json_decode($saved, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
+            }
+        }
+        return self::DEFAULT_GEOS;
     }
 
     public function getTopics(

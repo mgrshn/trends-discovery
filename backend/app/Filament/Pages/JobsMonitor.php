@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Services\ParserClient;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -29,14 +30,20 @@ class JobsMonitor extends Page
             ->whereDate('computed_at', today())
             ->count();
 
-        $lastIngest = DB::table('topics')
-            ->max('updated_at');
+        $lastIngestAt = DB::table('topics')->max('last_seen_at');
+
+        try {
+            $parserHealthy = app(ParserClient::class)->isHealthy();
+        } catch (\Throwable) {
+            $parserHealthy = false;
+        }
 
         return [
+            'parser_healthy'   => $parserHealthy,
             'pending'          => $pending,
             'failed'           => $failed,
             'scored_today'     => $processedToday,
-            'last_ingest'      => $lastIngest ? \Carbon\Carbon::parse($lastIngest)->diffForHumans() : 'never',
+            'last_ingest'      => $lastIngestAt ? \Carbon\Carbon::parse($lastIngestAt)->diffForHumans() : 'never',
             'topics_total'     => DB::table('topics')->count(),
             'topics_scored'    => DB::table('topics')->whereNotNull('last_scored_at')->count(),
         ];

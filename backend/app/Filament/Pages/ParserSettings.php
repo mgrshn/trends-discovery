@@ -6,6 +6,7 @@ use App\Jobs\IngestTrendingJob;
 use App\Jobs\ScoreTopicsJob;
 use App\Models\Setting;
 use App\Services\DashboardService;
+use Filament\Forms\Components\Placeholder;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
@@ -35,9 +36,13 @@ class ParserSettings extends Page implements HasForms
 
     public function mount(): void
     {
+        $savedGeos = Setting::get('ingest_geos');
+        $geos = $savedGeos ? (json_decode($savedGeos, true) ?: DashboardService::DEFAULT_GEOS) : DashboardService::DEFAULT_GEOS;
+
         $this->form->fill([
             'auto_parse_enabled'     => Setting::getBool('auto_parse_enabled', true),
             'parse_interval_minutes' => Setting::getInt('parse_interval_minutes', 30),
+            'ingest_geos'            => $geos,
         ]);
     }
 
@@ -64,6 +69,17 @@ class ParserSettings extends Page implements HasForms
                             ])
                             ->native(false),
                     ]),
+
+                Section::make('Geos to parse')
+                    ->description('Select which countries to include in automatic trending ingestion. Uncheck all to use the full default list.')
+                    ->schema([
+                        CheckboxList::make('ingest_geos')
+                            ->label('')
+                            ->options(fn () => self::getGeoOptions())
+                            ->columns(6)
+                            ->searchable()
+                            ->bulkToggleable(),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -73,6 +89,9 @@ class ParserSettings extends Page implements HasForms
         $state = $this->form->getState();
         Setting::set('auto_parse_enabled', $state['auto_parse_enabled'] ? 'true' : 'false');
         Setting::set('parse_interval_minutes', (string) $state['parse_interval_minutes']);
+
+        $geos = $state['ingest_geos'] ?? [];
+        Setting::set('ingest_geos', json_encode(array_values($geos)));
 
         Notification::make()->title('Settings saved')->success()->send();
     }
@@ -132,8 +151,24 @@ class ParserSettings extends Page implements HasForms
 
     public static function getGeoOptions(): array
     {
-        return collect(DashboardService::ingestGeos())
-            ->mapWithKeys(fn($g) => [$g => $g])
-            ->all();
+        return [
+            'US' => 'United States',  'GB' => 'United Kingdom', 'CA' => 'Canada',
+            'AU' => 'Australia',      'NZ' => 'New Zealand',    'IE' => 'Ireland',
+            'DE' => 'Germany',        'FR' => 'France',         'IT' => 'Italy',
+            'ES' => 'Spain',          'PT' => 'Portugal',       'NL' => 'Netherlands',
+            'BE' => 'Belgium',        'CH' => 'Switzerland',    'AT' => 'Austria',
+            'SE' => 'Sweden',         'NO' => 'Norway',         'DK' => 'Denmark',
+            'FI' => 'Finland',        'PL' => 'Poland',         'CZ' => 'Czech Republic',
+            'HU' => 'Hungary',        'RO' => 'Romania',        'GR' => 'Greece',
+            'UA' => 'Ukraine',        'RU' => 'Russia',         'TR' => 'Turkey',
+            'IL' => 'Israel',         'SA' => 'Saudi Arabia',   'AE' => 'UAE',
+            'EG' => 'Egypt',          'ZA' => 'South Africa',   'NG' => 'Nigeria',
+            'IN' => 'India',          'PK' => 'Pakistan',       'BD' => 'Bangladesh',
+            'SG' => 'Singapore',      'MY' => 'Malaysia',       'PH' => 'Philippines',
+            'ID' => 'Indonesia',      'TH' => 'Thailand',       'VN' => 'Vietnam',
+            'HK' => 'Hong Kong',      'TW' => 'Taiwan',         'JP' => 'Japan',
+            'KR' => 'South Korea',    'BR' => 'Brazil',         'MX' => 'Mexico',
+            'AR' => 'Argentina',      'CL' => 'Chile',          'CO' => 'Colombia',
+        ];
     }
 }

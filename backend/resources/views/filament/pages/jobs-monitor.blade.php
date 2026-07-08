@@ -1,13 +1,25 @@
 <x-filament-panels::page>
     @php $stats = $this->getStats() @endphp
 
+    {{-- Parser health --}}
+    <x-filament::section>
+        <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full {{ $stats['parser_healthy'] ? 'bg-success-500' : 'bg-danger-500' }} flex-shrink-0"></span>
+            <div>
+                <p class="text-sm font-semibold {{ $stats['parser_healthy'] ? 'text-success-600' : 'text-danger-600' }}">
+                    Parser: {{ $stats['parser_healthy'] ? 'Online' : 'Unreachable' }}
+                </p>
+                <p class="text-xs text-gray-500">Last ingest: {{ $stats['last_ingest'] }}</p>
+            </div>
+        </div>
+    </x-filament::section>
+
     {{-- Stats grid --}}
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         @foreach ([
             ['label' => 'Pending jobs',   'value' => $stats['pending'],       'color' => 'text-blue-600'],
             ['label' => 'Failed jobs',    'value' => $stats['failed'],        'color' => $stats['failed'] > 0 ? 'text-red-600' : 'text-gray-900'],
             ['label' => 'Scored today',   'value' => $stats['scored_today'],  'color' => 'text-emerald-600'],
-            ['label' => 'Last ingest',    'value' => $stats['last_ingest'],   'color' => 'text-gray-700'],
             ['label' => 'Topics total',   'value' => number_format($stats['topics_total']),  'color' => 'text-gray-700'],
             ['label' => 'Topics scored',  'value' => number_format($stats['topics_scored']), 'color' => 'text-gray-700'],
         ] as $stat)
