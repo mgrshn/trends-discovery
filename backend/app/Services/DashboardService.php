@@ -78,6 +78,12 @@ class DashboardService
             Cache::put($cacheKey, array_merge($data, ['cached' => true]), now()->addMinutes($cacheMinutes));
         }
 
+        // Pre-warm parser cache so Analyze clicks are fast
+        if (count($items) > 0) {
+            $keywords = array_column($items, 'keyword');
+            \App\Jobs\PrewarmLiveTrendsJob::dispatch($keywords, $geo)->onQueue('default');
+        }
+
         return $data;
     }
 

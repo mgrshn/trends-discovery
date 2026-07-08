@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Services\ParserClient;
+use App\Jobs\PrewarmLiveTrendsJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -82,6 +83,11 @@ class IngestTrendingJob implements ShouldQueue
         // Immediately queue scoring for unscored topics from this geo
         // so trend data is ready before the hourly ScoreTopicsJob runs
         ScoreTopicsJob::dispatch(20)->onQueue('default');
+
+        // Pre-warm parser 12m trend cache for top freshly-ingested topics
+        // so Analyze clicks are fast without waiting for ScoreTopicsJob
+        $topKeywords = array_slice(array_column($trends, 'keyword'), 0, 20);
+        PrewarmLiveTrendsJob::dispatch($topKeywords, $this->geo)->onQueue('default');
     }
 
     private function buildCategoryMap(): array
