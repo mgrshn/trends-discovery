@@ -45,6 +45,7 @@ class ParserSettings extends Page implements HasForms
             'ingest_geos'            => $geos,
             'live_mode'              => Setting::get('live_mode', 'disabled'),
             'live_cache_minutes'     => Setting::getInt('live_cache_minutes', 30),
+            'prewarm_enabled'        => Setting::getBool('prewarm_enabled', true),
         ]);
     }
 
@@ -96,6 +97,10 @@ class ParserSettings extends Page implements HasForms
                             ])
                             ->native(false)
                             ->helperText('Only applies when mode is "Cached". How long to keep data in Redis before re-fetching.'),
+
+                        Toggle::make('prewarm_enabled')
+                            ->label('Pre-warm trend cache')
+                            ->helperText('After loading Live topics or finishing an ingest, silently kick off trend fetches in the background so Analyze clicks open instantly instead of waiting 5–30s.'),
                     ]),
 
                 Section::make('Geos to parse')
@@ -123,6 +128,7 @@ class ParserSettings extends Page implements HasForms
 
         Setting::set('live_mode', $state['live_mode'] ?? 'disabled');
         Setting::set('live_cache_minutes', (string)($state['live_cache_minutes'] ?? 30));
+        Setting::set('prewarm_enabled', ($state['prewarm_enabled'] ?? false) ? 'true' : 'false');
 
         Notification::make()->title('Settings saved')->success()->send();
     }

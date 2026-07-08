@@ -86,8 +86,10 @@ class IngestTrendingJob implements ShouldQueue
 
         // Pre-warm parser 12m trend cache for top freshly-ingested topics
         // so Analyze clicks are fast without waiting for ScoreTopicsJob
-        $topKeywords = array_slice(array_column($trends, 'keyword'), 0, 20);
-        PrewarmLiveTrendsJob::dispatch($topKeywords, $this->geo)->onQueue('default');
+        if (\App\Models\Setting::getBool('prewarm_enabled', true)) {
+            $topKeywords = array_slice(array_column($trends, 'keyword'), 0, 20);
+            PrewarmLiveTrendsJob::dispatch($topKeywords, $this->geo)->onQueue('default');
+        }
     }
 
     private function buildCategoryMap(): array
