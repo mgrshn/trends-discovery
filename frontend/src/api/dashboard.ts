@@ -60,3 +60,28 @@ export async function fetchDashboard(params: {
 export async function fetchCategories(): Promise<Category[]> {
   return apiFetch<Category[]>('/dashboard/categories')
 }
+
+export interface LiveTopic {
+  keyword: string
+  geo: string
+  volume: number | null
+  volume_fmt: string | null
+  growth_pct: number | null
+  growth_fmt: string | null
+  breakdown: string[]
+}
+
+export interface LiveResult {
+  data: LiveTopic[]
+  total: number
+  geo: string
+  mode: 'live'
+  fetched_at: string
+  cached: boolean
+  error?: string
+  message?: string
+}
+
+export async function fetchLive(params: { geo: string }): Promise<LiveResult> {
+  return apiFetch<LiveResult>('/dashboard/live', { geo: params.geo })
+}

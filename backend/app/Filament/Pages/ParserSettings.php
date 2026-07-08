@@ -43,6 +43,8 @@ class ParserSettings extends Page implements HasForms
             'auto_parse_enabled'     => Setting::getBool('auto_parse_enabled', true),
             'parse_interval_minutes' => Setting::getInt('parse_interval_minutes', 30),
             'ingest_geos'            => $geos,
+            'live_mode'              => Setting::get('live_mode', 'disabled'),
+            'live_cache_minutes'     => Setting::getInt('live_cache_minutes', 30),
         ]);
     }
 
@@ -70,6 +72,32 @@ class ParserSettings extends Page implements HasForms
                             ->native(false),
                     ]),
 
+                Section::make('Live mode')
+                    ->description('Controls the Live tab on the dashboard — fetches Trending Now directly from the parser without storing to DB.')
+                    ->schema([
+                        Select::make('live_mode')
+                            ->label('Live tab data source')
+                            ->options([
+                                'disabled'   => 'Disabled — Live tab hidden',
+                                'on_request' => 'On each request — always fetch fresh from Google (slow)',
+                                'cached'     => 'Cached — fetch once, serve from Redis for N minutes (fast)',
+                            ])
+                            ->native(false)
+                            ->helperText('When disabled, the Live tab will show a "not available" message.'),
+
+                        Select::make('live_cache_minutes')
+                            ->label('Cache duration (minutes)')
+                            ->options([
+                                5   => '5 minutes',
+                                15  => '15 minutes',
+                                30  => '30 minutes',
+                                60  => '1 hour',
+                                120 => '2 hours',
+                            ])
+                            ->native(false)
+                            ->helperText('Only applies when mode is "Cached". How long to keep data in Redis before re-fetching.'),
+                    ]),
+
                 Section::make('Geos to parse')
                     ->description('Select which countries to include in automatic trending ingestion. Uncheck all to use the full default list.')
                     ->schema([
@@ -92,6 +120,9 @@ class ParserSettings extends Page implements HasForms
 
         $geos = $state['ingest_geos'] ?? [];
         Setting::set('ingest_geos', json_encode(array_values($geos)));
+
+        Setting::set('live_mode', $state['live_mode'] ?? 'disabled');
+        Setting::set('live_cache_minutes', (string)($state['live_cache_minutes'] ?? 30));
 
         Notification::make()->title('Settings saved')->success()->send();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use App\Services\DashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,6 +34,31 @@ class DashboardController extends Controller
         );
 
         return response()->json($result);
+    }
+
+    public function live(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'geo' => ['required', 'string', 'size:2'],
+        ]);
+
+        $liveMode = Setting::get('live_mode', 'disabled');
+
+        if ($liveMode === 'disabled') {
+            return response()->json([
+                'error'   => 'disabled',
+                'message' => 'Live mode is disabled. Enable it in Admin → Parser Settings.',
+            ], 403);
+        }
+
+        try {
+            return response()->json($this->service->getLiveTopics($validated['geo'], $liveMode));
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error'   => 'parser_error',
+                'message' => 'Failed to fetch live data: ' . $e->getMessage(),
+            ], 503);
+        }
     }
 
     public function categories(): JsonResponse

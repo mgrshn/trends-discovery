@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Services\ParserClient;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class DashboardService
@@ -24,6 +26,49 @@ class DashboardService
             }
         }
         return self::DEFAULT_GEOS;
+    }
+
+    public function getLiveTopics(string $geo, string $liveMode): array
+    {
+        $cacheMinutes = \App\Models\Setting::getInt('live_cache_minutes', 30);
+        $cacheKey = "live:trending:{$geo}";
+
+        if ($liveMode === 'cached') {
+            $hit = Cache::get($cacheKey);
+            if ($hit) {
+                return $hit;
+            }
+        }
+
+        $result = app(ParserClient::class)->trending(geo: $geo, sinceHours: 24, limit: 50, sort: 'volume');
+        $trends = $result['trends'] ?? [];
+
+        $data = [
+            'data' => array_map(fn($t) => [
+                'keyword'    => $t['keyword'] ?? '',
+                'geo'        => $geo,
+                'volume'     => $t['volume'] ?? null,
+                'volume_fmt' => $this->formatVolume($t['volume'] ?? null),
+                'growth_pct' => $t['growth_pct'] ?? null,
+                'growth_fmt' => isset($t['growth_pct'])
+                    ? ($t['growth_pct'] >= 0
+                        ? '+' . number_format((int)$t['growth_pct']) . '%'
+                        : number_format((int)$t['growth_pct']) . '%')
+                    : null,
+                'breakdown'  => array_slice($t['breakdown'] ?? [], 0, 5),
+            ], $trends),
+            'total'      => count($trends),
+            'geo'        => $geo,
+            'mode'       => 'live',
+            'fetched_at' => now()->toIso8601String(),
+            'cached'     => false,
+        ];
+
+        if ($liveMode === 'cached' && count($trends) > 0) {
+            Cache::put($cacheKey, array_merge($data, ['cached' => true]), now()->addMinutes($cacheMinutes));
+        }
+
+        return $data;
     }
 
     public function getTopics(

@@ -22,6 +22,7 @@ Route::prefix('v1')->group(function () {
 
     // Этап 2: Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/dashboard/live', [DashboardController::class, 'live']);
     Route::get('/dashboard/categories', [DashboardController::class, 'categories']);
 
     // Этап 4: Catalog
