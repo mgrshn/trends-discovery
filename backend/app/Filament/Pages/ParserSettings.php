@@ -6,13 +6,14 @@ use App\Jobs\IngestTrendingJob;
 use App\Models\Setting;
 use App\Services\DashboardService;
 use Filament\Actions\Action;
-use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use BackedEnum;
@@ -30,7 +31,6 @@ class ParserSettings extends Page implements HasForms
     protected static ?string $title = 'Parser Settings';
 
     public ?array $data = [];
-    public array  $manual_geos = [];
 
     public function mount(): void
     {
@@ -76,25 +76,39 @@ class ParserSettings extends Page implements HasForms
         Notification::make()->title('Settings saved')->success()->send();
     }
 
-    public function parseNow(): void
-    {
-        $geos = empty($this->manual_geos)
-            ? DashboardService::ingestGeos()
-            : $this->manual_geos;
-
-        foreach ($geos as $geo) {
-            IngestTrendingJob::dispatch($geo)->onQueue('default');
-        }
-
-        Notification::make()
-            ->title('Dispatched ' . count($geos) . ' ingest jobs')
-            ->success()
-            ->send();
-    }
-
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('parseNow')
+                ->label('Parse now')
+                ->icon('heroicon-o-play')
+                ->color('success')
+                ->modalHeading('One-time ingest')
+                ->modalDescription('Select geos to parse. Leave all unchecked to run all 51 geos.')
+                ->modalSubmitActionLabel('Dispatch jobs')
+                ->form([
+                    CheckboxList::make('geos')
+                        ->label('Geos')
+                        ->options(fn () => self::getGeoOptions())
+                        ->columns(6)
+                        ->searchable()
+                        ->bulkToggleable(),
+                ])
+                ->action(function (array $data): void {
+                    $geos = empty($data['geos'])
+                        ? DashboardService::ingestGeos()
+                        : $data['geos'];
+
+                    foreach ($geos as $geo) {
+                        IngestTrendingJob::dispatch($geo)->onQueue('default');
+                    }
+
+                    Notification::make()
+                        ->title('Dispatched ' . count($geos) . ' ingest jobs')
+                        ->success()
+                        ->send();
+                }),
+
             Action::make('save')
                 ->label('Save settings')
                 ->action('save')
