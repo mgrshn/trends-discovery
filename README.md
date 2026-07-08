@@ -5,92 +5,90 @@
 ## Архитектура
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                  docker-compose                      │
-│                                                      │
-│  ┌──────────┐   ┌──────────┐   ┌────────────────┐  │
-│  │ frontend │   │ backend  │   │    horizon     │  │
-│  │ React SPA│──▶│ Laravel  │──▶│ (queue worker) │  │
-│  │ :3000    │   │ :8080    │   └────────────────┘  │
-│  └──────────┘   └────┬─────┘   ┌────────────────┐  │
-│                       │         │   scheduler    │  │
-│                       │         │ (cron every 1m)│  │
-│               ┌───────┴──────┐  └────────────────┘  │
-│               │  PostgreSQL  │                       │
-│               │  Redis       │                       │
-│               └──────────────┘                       │
-└─────────────────────────────────────────────────────┘
-              │
-              ▼ HTTP
-     google-trends-parser
-     http://localhost:8000
+                    HTTPS (Caddy)
+  Browser ─────────────────────────────────┐
+                                           ▼
+                                    ┌────────────┐
+                                    │   Caddy    │ :80/:443
+                                    └─────┬──────┘
+                           /api, /admin   │   /  (React SPA)
+                                  ┌───────┴───────┐
+                                  ▼               ▼
+                           ┌──────────┐    ┌────────────┐
+                           │ backend  │    │  frontend  │
+                           │ Laravel  │    │  (static)  │
+                           │ :8000    │    └────────────┘
+                           └──┬───┬───┘
+                              │   └──────────────────────┐
+                    ┌─────────┴──────┐        ┌──────────┴──────┐
+                    │  horizon       │         │   scheduler     │
+                    │ (queue worker) │         │ (cron every 1m) │
+                    └────────────────┘         └─────────────────┘
+                              │
+                    ┌─────────┴──────────┐
+                    │ PostgreSQL + Redis  │
+                    └────────────────────┘
+                              │
+                        shared network
+                              │
+                    ┌─────────┴──────────┐
+                    │ google-trends-     │
+                    │ parser :8000       │
+                    └────────────────────┘
 ```
 
-## Требования
+## Production deploy (VDS)
 
-- Docker + Docker Compose
-- Запущенный сервис [google-trends-parser](../google-trends-parser) на `http://localhost:8000`
-
-## Быстрый старт
-
-### 1. Переменные окружения
+### Первый раз на новом сервере
 
 ```bash
-cp backend/.env.example backend/.env
+# 1. Установить Docker + Docker Compose (если нет)
+
+# 2. Создать shared-сеть для связи с парсером (если парсер на том же сервере)
+docker network create shared
+
+# 3. Клонировать репо
+git clone git@github.com:mgrshn/trends-discovery.git
+cd trends-discovery
+
+# 4. Создать .env
+cp env.prod.example .env
+# Отредактировать: DOMAIN, APP_URL, APP_KEY, DB_PASSWORD, PARSER_API_KEY
+
+# 5. Поднять
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-Обязательно задать `APP_KEY` в `backend/.env`:
+`entrypoint.sh` при старте автоматически:
+- применяет миграции (`php artisan migrate`)
+- публикует ассеты Filament
+- засевает категории
+- кэширует конфиг и роуты
+
+### Обновление
 
 ```bash
-# Сгенерировать ключ (нужен запущенный PHP или Docker)
+./deploy.sh
+# или вручную:
+git pull && docker compose -f docker-compose.prod.yml up -d --build
+```
+
+### Переменные окружения (`.env`)
+
+| Переменная | Пример | Описание |
+|------------|--------|----------|
+| `DOMAIN` | `example.com` | Хост без схемы — для Caddy + Let's Encrypt |
+| `APP_URL` | `https://example.com` | Полный URL — для Laravel |
+| `APP_KEY` | `base64:...` | Laravel app key (**только в `.env`**, не в docker-compose) |
+| `DB_DATABASE` | `discovery` | Имя базы данных |
+| `DB_USERNAME` | `discovery` | Пользователь БД |
+| `DB_PASSWORD` | — | Пароль БД |
+| `PARSER_URL` | `http://parser:8000` | URL парсера (через shared docker-сеть) |
+| `PARSER_API_KEY` | — | API-ключ парсера |
+
+Сгенерировать `APP_KEY`:
+```bash
 docker run --rm php:8.3-cli php -r "echo 'base64:'.base64_encode(random_bytes(32)).PHP_EOL;"
-```
-
-Минимальный `backend/.env`:
-
-```env
-APP_KEY=base64:ВАШ_КЛЮЧ_ЗДЕСЬ
-PARSER_URL=http://host.docker.internal:8000
-PARSER_API_KEY=           # оставить пустым если парсер без авторизации
-```
-
-### 2. Запуск
-
-```bash
-docker compose up -d
-```
-
-При первом запуске entrypoint автоматически:
-- установит PHP-зависимости (`composer install`)
-- применит миграции (`php artisan migrate`)
-- опубликует ассеты Filament
-- засеет категории
-
-### 3. Проверка
-
-| Сервис | URL |
-|--------|-----|
-| React SPA | http://localhost:3000 |
-| Backend API | http://localhost:8080/api/v1 |
-| Admin (Filament) | http://localhost:8080/admin |
-| Horizon (очереди) | http://localhost:8080/horizon |
-| Health check | http://localhost:8080/api/health |
-
-### 4. Первые данные
-
-Данные появляются автоматически — инжест-джоба запускается каждые 30 минут по расписанию. Для немедленного запуска:
-
-```bash
-# Запустить инжест по всем 51 гео прямо сейчас
-docker compose exec backend php artisan tinker --execute="
-foreach (App\Services\DashboardService::ingestGeos() as \$geo) {
-    App\Jobs\IngestTrendingJob::dispatch(\$geo);
-}
-echo 'Dispatched ' . count(App\Services\DashboardService::ingestGeos()) . ' jobs';
-"
-
-# Запустить скоринг вручную
-docker compose exec backend php artisan tinker --execute="App\Jobs\ScoreTopicsJob::dispatch(50);"
 ```
 
 ## Расписание фоновых задач
@@ -102,44 +100,73 @@ docker compose exec backend php artisan tinker --execute="App\Jobs\ScoreTopicsJo
 | `ScoreTopicsJob` | каждый час | Скоринг батчами по 50 топиков |
 | `RelatedRisingIngestJob` | каждые 6 часов | Rising-запросы для топ-30 взрывных топиков |
 
-## Полезные команды
+### Проверить что автопарсинг работает
 
 ```bash
-# Статус сервисов
-docker compose ps
+# 1. Планировщик видит задачи
+docker compose -f docker-compose.prod.yml exec scheduler php artisan schedule:list
 
-# Логи
-docker compose logs -f backend
-docker compose logs -f horizon
+# 2. Horizon принимает джобы (статус should be running)
+curl https://DOMAIN/horizon/api/stats
 
-# Tinker (Laravel REPL)
-docker compose exec backend php artisan tinker
-
-# Статистика топиков
-docker compose exec backend php artisan tinker --execute="
-echo 'Total: ' . DB::table('topics')->count() . PHP_EOL;
+# 3. Данные появляются в БД
+docker compose -f docker-compose.prod.yml exec backend php artisan tinker --execute="
+echo 'Topics: ' . DB::table('topics')->count() . PHP_EOL;
+echo 'Last ingest: ' . DB::table('topics')->max('last_seen_at') . PHP_EOL;
 DB::table('topics')->selectRaw('status, count(*) n')
     ->whereNotNull('status')->groupBy('status')->get()
     ->each(fn(\$r) => print(\$r->status . ': ' . \$r->n . PHP_EOL));
 "
 
-# Проверить расписание
-docker compose exec backend php artisan schedule:list
-
-# Перезапустить Horizon (после изменений в очередях)
-docker compose restart horizon
+# 4. Логи Horizon — посмотреть выполненные джобы
+docker compose -f docker-compose.prod.yml logs --tail=50 horizon
 ```
 
-## Переменные окружения
+### Запустить инжест вручную (Parse now)
 
-| Переменная | По умолчанию | Описание |
-|------------|-------------|----------|
-| `APP_KEY` | — | Laravel app key (обязателен, только в `.env`) |
-| `PARSER_URL` | `http://host.docker.internal:8000` | URL парсера Google Trends |
-| `PARSER_API_KEY` | пусто | API-ключ парсера (если включена авторизация) |
-| `DB_DATABASE` | `discovery` | Имя базы данных |
-| `DB_USERNAME` | `discovery` | Пользователь БД |
-| `DB_PASSWORD` | `secret` | Пароль БД |
-| `BACKEND_PORT` | `8080` | Внешний порт backend |
-| `FRONTEND_PORT` | `3000` | Внешний порт frontend |
-| `DB_EXTERNAL_PORT` | `5433` | Внешний порт PostgreSQL |
+Через админку: `/admin/parser-settings` → кнопка **Parse now** → выбрать гео → Dispatch jobs.
+
+Или из CLI:
+```bash
+docker compose -f docker-compose.prod.yml exec backend php artisan tinker --execute="
+foreach (App\Services\DashboardService::ingestGeos() as \$geo) {
+    App\Jobs\IngestTrendingJob::dispatch(\$geo)->onQueue('default');
+}
+echo 'Dispatched jobs' . PHP_EOL;
+"
+```
+
+## Полезные команды
+
+```bash
+# Статус контейнеров
+docker compose -f docker-compose.prod.yml ps
+
+# Логи
+docker compose -f docker-compose.prod.yml logs -f backend
+docker compose -f docker-compose.prod.yml logs -f horizon
+docker compose -f docker-compose.prod.yml logs -f scheduler
+
+# Перезапустить Horizon (после изменений в очередях)
+docker compose -f docker-compose.prod.yml restart horizon
+
+# Принудительно сбросить кэш конфига
+docker compose -f docker-compose.prod.yml exec backend php artisan config:clear
+docker compose -f docker-compose.prod.yml exec backend php artisan config:cache
+```
+
+## Локальная разработка
+
+```bash
+# Backend
+cd backend && composer install
+cp .env.example .env && php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+
+# Frontend (отдельный терминал)
+cd frontend && npm install && npm run dev
+
+# Horizon (отдельный терминал)
+php artisan horizon
+```
