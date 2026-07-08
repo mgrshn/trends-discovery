@@ -82,6 +82,10 @@ export interface LiveResult {
   message?: string
 }
 
-export async function fetchLive(params: { geo: string }): Promise<LiveResult> {
-  return apiFetch<LiveResult>('/dashboard/live', { geo: params.geo })
+export type LiveSort = 'volume' | 'growth' | 'title'
+
+export async function fetchLive(params: { geo: string; sort?: LiveSort }): Promise<LiveResult> {
+  const p: Record<string, string> = { geo: params.geo }
+  if (params.sort) p.sort = params.sort
+  return apiFetch<LiveResult>('/dashboard/live', p)
 }

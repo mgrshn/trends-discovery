@@ -39,7 +39,8 @@ class DashboardController extends Controller
     public function live(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'geo' => ['required', 'string', 'size:2'],
+            'geo'  => ['required', 'string', 'size:2'],
+            'sort' => ['nullable', 'in:volume,growth,title'],
         ]);
 
         $liveMode = Setting::get('live_mode', 'disabled');
@@ -52,7 +53,7 @@ class DashboardController extends Controller
         }
 
         try {
-            return response()->json($this->service->getLiveTopics($validated['geo'], $liveMode));
+            return response()->json($this->service->getLiveTopics($validated['geo'], $liveMode, $validated['sort'] ?? 'volume'));
         } catch (\Throwable $e) {
             return response()->json([
                 'error'   => 'parser_error',

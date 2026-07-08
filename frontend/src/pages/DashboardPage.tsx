@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import TrendCard from '../components/TrendCard'
 import LiveCard from '../components/LiveCard'
-import type { TrendTopic, Category, DashboardSort, LiveTopic } from '../api/dashboard'
+import type { TrendTopic, Category, DashboardSort, LiveTopic, LiveSort } from '../api/dashboard'
 import { fetchDashboard, fetchCategories, fetchLive } from '../api/dashboard'
 import { GEO_LIST, GEO_LIST_COUNTRIES } from '../constants/geos'
 
@@ -40,6 +40,7 @@ export default function DashboardPage() {
   const [liveLoading, setLiveLoading] = useState(false)
   const [liveError, setLiveError] = useState<string | null>(null)
   const [liveDisabled, setLiveDisabled] = useState(false)
+  const [liveSort, setLiveSort] = useState<LiveSort>('volume')
 
   useEffect(() => {
     fetchCategories().then(setCategories).catch(() => {})
@@ -70,12 +71,12 @@ export default function DashboardPage() {
     [],
   )
 
-  const loadLive = useCallback(async (g: string) => {
+  const loadLive = useCallback(async (g: string, s: LiveSort) => {
     setLiveLoading(true)
     setLiveError(null)
     setLiveDisabled(false)
     try {
-      const result = await fetchLive({ geo: g || 'US' })
+      const result = await fetchLive({ geo: g || 'US', sort: s })
       setLiveTopics(result.data)
       setLiveFetchedAt(result.fetched_at)
       setLiveCached(result.cached)
@@ -93,11 +94,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (mode === 'live') {
-      loadLive(geo || 'US')
+      loadLive(geo || 'US', liveSort)
     } else {
       load(selectedCategory, page, mode, geo, sort, activeOnly)
     }
-  }, [selectedCategory, page, mode, geo, sort, activeOnly, load, loadLive])
+  }, [selectedCategory, page, mode, geo, sort, activeOnly, liveSort, load, loadLive])
 
   function selectCategory(id: number | null) {
     setSelectedCategory(id)
@@ -217,6 +218,22 @@ export default function DashboardPage() {
               Active only
             </button>
           </>
+        )}
+
+        {mode === 'live' && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500 shrink-0">Sort:</span>
+            <select
+              value={liveSort}
+              onChange={(e) => setLiveSort(e.target.value as LiveSort)}
+              className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700
+                         focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+              <option value="volume">Search Volume</option>
+              <option value="growth">Growth</option>
+              <option value="title">Title</option>
+            </select>
+          </div>
         )}
 
         {mode === 'live' && liveFetchedAt && (
