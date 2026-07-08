@@ -68,10 +68,10 @@ docker compose -f docker-compose.prod.yml up -d --build
 ### Обновление
 
 ```bash
-./deploy.sh
-# или вручную:
-git pull && docker compose -f docker-compose.prod.yml up -d --build
+cd ~/apps/discovery && bash deploy.sh
 ```
+
+Скрипт: стягивает код, пересобирает изменившиеся контейнеры, показывает статус и ссылку на админку.
 
 ### Переменные окружения (`.env`)
 

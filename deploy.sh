@@ -15,4 +15,6 @@ echo ">>> status"
 docker compose -f docker-compose.prod.yml ps
 
 echo ""
-echo ">>> done. Logs: docker compose -f docker-compose.prod.yml logs -f"
+echo "✅ Deploy complete!"
+echo "   Logs:   docker compose -f docker-compose.prod.yml logs -f"
+echo "   Admin:  https://$(grep '^DOMAIN=' .env | cut -d= -f2)/admin"
