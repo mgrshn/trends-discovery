@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import SparklineChart from '../components/SparklineChart'
 import type { CatalogSort, CatalogTopic, CategoryStat } from '../api/catalog'
 import { fetchCatalog, fetchCatalogCategories } from '../api/catalog'
-import type { TopicStatus } from '../api/dashboard'
 import { useTracking } from '../context/TrackingContext'
 
 const PER_PAGE = 24
