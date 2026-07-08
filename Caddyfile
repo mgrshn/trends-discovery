@@ -1,4 +1,4 @@
-v893379.hosted-by-vdsina.com {
+{$DOMAIN} {
     # Laravel backend — API, admin, очереди, Livewire, Filament assets
     handle /api/* {
         reverse_proxy backend:8000

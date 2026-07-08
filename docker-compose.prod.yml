@@ -136,6 +136,8 @@ services:
       context: .
       dockerfile: Dockerfile.caddy
     restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
     ports:
       - "80:80"
       - "443:443"
