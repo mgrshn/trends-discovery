@@ -22,8 +22,8 @@ COPY . .
 
 RUN composer dump-autoload --optimize --no-dev
 
-# Generate app key if .env exists; skip gracefully otherwise
-RUN cp .env.example .env 2>/dev/null || true
+# Empty .env — all config comes from container environment variables
+RUN touch .env
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
