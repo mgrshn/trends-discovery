@@ -91,6 +91,28 @@ cd ~/apps/discovery && bash deploy.sh
 docker run --rm php:8.3-cli php -r "echo 'base64:'.base64_encode(random_bytes(32)).PHP_EOL;"
 ```
 
+## API endpoints (discovery backend)
+
+Базовый путь: `/api/v1`
+
+| Метод | Путь | Описание |
+|-------|------|----------|
+| GET | `/api/health` | Healthcheck |
+| GET | `/api/v1/analysis` | Trend Analysis: ?keyword=&geo=&period=&engine= |
+| GET | `/api/v1/dashboard` | Dashboard topics: ?mode=realtime\|longterm&geo=&category_id=&status=&page= |
+| GET | `/api/v1/dashboard/categories` | Список категорий |
+| GET | `/api/v1/catalog` | Catalog: ?geo=&category_id=&status=&sort=&page= |
+| GET | `/api/v1/catalog/categories` | Категории для каталога |
+| GET | `/api/v1/projects` | Список проектов |
+| POST | `/api/v1/projects` | Создать проект |
+| DELETE | `/api/v1/projects/{id}` | Удалить проект |
+| GET | `/api/v1/projects/{id}/topics` | Топики проекта |
+| POST | `/api/v1/projects/{id}/topics` | Добавить топик в проект |
+| DELETE | `/api/v1/projects/{id}/topics/{topicId}` | Убрать топик из проекта |
+| GET | `/api/v1/projects/{id}/export` | Экспорт топиков проекта |
+
+Парсер (отдельный сервис): Swagger на `http://localhost:8000/docs`
+
 ## Расписание фоновых задач
 
 | Задача | Частота | Описание |

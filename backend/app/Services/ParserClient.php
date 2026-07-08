@@ -111,6 +111,35 @@ class ParserClient
         return $this->http->get('/trending', $params)->json();
     }
 
+    // ── Proxy management ─────────────────────────────────────────────────────
+
+    public function getProxies(): array
+    {
+        return $this->http->get('/proxies')->throw()->json() ?? [];
+    }
+
+    public function addProxy(string $url): array
+    {
+        return $this->http->post('/proxies', ['url' => $url])->throw()->json();
+    }
+
+    public function toggleProxy(int $id, bool $enabled): array
+    {
+        return $this->http->patch("/proxies/{$id}", ['enabled' => $enabled])->throw()->json();
+    }
+
+    public function checkProxy(int $id): array
+    {
+        return $this->http->post("/proxies/{$id}/check")->throw()->json();
+    }
+
+    public function deleteProxy(int $id): void
+    {
+        $this->http->delete("/proxies/{$id}")->throw();
+    }
+
+    // ── Internal ──────────────────────────────────────────────────────────────
+
     /**
      * Poll endpoint until it returns non-202, up to $maxAttempts × $delaySec.
      */

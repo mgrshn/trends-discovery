@@ -17,19 +17,7 @@
 
 ## Открытые
 
-## Управление прокси через API парсера
-- **Что нужно:** CRUD-эндпоинты для управления прокси-серверами, которые парсер использует при запросах к Google Trends
-- **Зачем:** в Filament-админке discovery нужен раздел управления прокси (добавить/удалить/вкл/выкл/проверить статус). Прокси реально применяются на стороне парсера — discovery только хранит и управляет ими через API, не имея прямого доступа к конфигу парсера
-- **Предлагаемый контракт:**
-  ```
-  GET    /proxies              → [{id, host, port, username, protocol, is_active, last_checked_at, last_status}]
-  POST   /proxies              body: {host, port, username?, password?, protocol}
-  PATCH  /proxies/{id}         body: {is_active?, host?, port?, ...}
-  DELETE /proxies/{id}
-  POST   /proxies/{id}/check   → {ok: bool, latency_ms: int, error?: string}
-  POST   /proxies/check-all    → [{id, ok, latency_ms}]
-  ```
-- **Приоритет:** желательно
+_(пусто)_
 
 ## Отложено (решение владельца)
 
@@ -40,4 +28,26 @@
 
 ## Выполнено
 
-_(пусто)_
+## Управление прокси через API парсера (готово 2026-07-08)
+Реализовано в парсере, задокументировано в Swagger. Все роуты требуют `X-API-Key`.
+Пароль прокси в ответах НЕ отдаётся (только host/protocol/username).
+
+```
+GET    /proxies              → [{id, host:"host:port", protocol, username, enabled,
+                                 success_count, fail_count, added_at, last_used_at}]
+POST   /proxies              body: {url:"http://user:pass@host:port"}  → 201, объект прокси
+PATCH  /proxies/{id}         body: {enabled: bool}                      → объект прокси
+DELETE /proxies/{id}                                                    → 204
+POST   /proxies/{id}/check   → {ok, latency_ms, exit_ip, error}
+```
+
+Отличия от предложенного контракта:
+- POST принимает готовый `url`, а не компоненты (проще, совпадает с CLI `proxy.py`).
+- Поле `enabled` вместо `is_active`. `check-all` не делал — дёргать `/check` по каждому id.
+- `last_checked_at`/`last_status` не персистятся (нет колонок); `check` возвращает результат на лету.
+
+**Важно для админки:** воркер загружает прокси из БД при старте и по сигналу SIGHUP.
+Изменения через API (add/enable/disable) применятся к скрейпингу только после reload воркера
+(`docker compose kill -s HUP worker`). API и воркер — разные контейнеры, автоматически
+воркер про изменение не узнает. Если нужно авто-применение — обсудить с агентом парсера
+(вариант: периодический refresh прокси-пула в воркере).
