@@ -38,10 +38,11 @@ Schedule::call(function () {
     }
 })->everyMinute()->name('ingest-trending-dynamic');
 
-// Score topics every hour — batch of 50 per run
-Schedule::job(new ScoreTopicsJob(50))->hourly()->name('score-topics');
+// Score topics every hour — batch of 100 per run, only when auto-parse is enabled
+Schedule::job(new ScoreTopicsJob(100))->hourly()->name('score-topics')
+    ->when(fn () => Setting::getBool('auto_parse_enabled', true));
 
-// Ingest related-rising queries for top scored topics — every 6 hours
+// Ingest related-rising queries for top scored topics — every 6 hours, only when auto-parse is enabled
 Schedule::call(function () {
     $topTopics = \Illuminate\Support\Facades\DB::table('topics')
         ->whereNotNull('last_scored_at')
@@ -53,4 +54,5 @@ Schedule::call(function () {
     foreach ($topTopics as $topic) {
         RelatedRisingIngestJob::dispatch($topic->keyword, $topic->geo)->onQueue('default');
     }
-})->everySixHours()->name('ingest-related-rising');
+})->everySixHours()->name('ingest-related-rising')
+    ->when(fn () => Setting::getBool('auto_parse_enabled', true));

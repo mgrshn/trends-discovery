@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Jobs\IngestTrendingJob;
+use App\Jobs\ScoreTopicsJob;
 use App\Models\Setting;
 use App\Services\DashboardService;
 use Filament\Actions\Action;
@@ -107,6 +108,19 @@ class ParserSettings extends Page implements HasForms
                         ->title('Dispatched ' . count($geos) . ' ingest jobs')
                         ->success()
                         ->send();
+                }),
+
+            Action::make('recalculateScores')
+                ->label('Recalculate scores')
+                ->icon('heroicon-o-calculator')
+                ->color('warning')
+                ->requiresConfirmation()
+                ->modalHeading('Recalculate scores')
+                ->modalDescription('Dispatch a scoring job for up to 100 unscored topics. Makes requests to the parser.')
+                ->modalSubmitActionLabel('Dispatch')
+                ->action(function (): void {
+                    ScoreTopicsJob::dispatch(100)->onQueue('default');
+                    Notification::make()->title('Scoring job dispatched')->success()->send();
                 }),
 
             Action::make('save')
