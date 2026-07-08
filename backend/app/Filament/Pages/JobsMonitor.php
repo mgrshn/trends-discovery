@@ -30,7 +30,7 @@ class JobsMonitor extends Page
             ->whereDate('computed_at', today())
             ->count();
 
-        $lastIngestAt = DB::table('topics')->max('last_seen_at');
+        $lastIngestAt = DB::table('topics')->max('updated_at');
 
         try {
             $parserHealthy = app(ParserClient::class)->isHealthy();
